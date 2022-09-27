@@ -19,13 +19,13 @@
                                      Background="Transparent"
                                      TextWrapping="Wrap"
                                      BorderThickness="0"
-                                     Foreground="Gray"
+                                     Foreground="White"
                                      CaretBrush="Gray"
                                      Margin="8,0,0,0"
                                      Text="{Binding Message, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
 
                                 <TextBox.InputBindings>
-                                    <KeyBinding Command="{Binding SendCommand}" Key="Return"/>
+                                    <KeyBinding Command="{Binding SendMessageCommand}"  Key="Return"/>
                                 </TextBox.InputBindings>
                                 
                             </TextBox>
@@ -34,14 +34,13 @@
                                        Text="@Message"
                                        VerticalAlignment="Center"
                                        HorizontalAlignment="Left"
-                                       Margin="10,0,0,0"
-                                       Foreground="White">
+                                       Margin="20,0,0,0"
+                                       Foreground="Gray">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Visibility" Value="Collapsed"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding Text, ElementName=MessageBox}" Value="">
-
                                                 <Setter Property="Visibility" Value="Visible"/>
                                             </DataTrigger>
                                             

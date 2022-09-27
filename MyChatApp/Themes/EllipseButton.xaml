@@ -1,0 +1,15 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ControlTemplate TargetType="Button" x:Key="EllipseButton">
+        <Grid>
+            <Ellipse Height="100"
+                     Width="100">
+                <Ellipse.Fill>
+                    <ImageBrush x:Name="PreviewPicture" ImageSource="{Binding ProfilePicture}"/>
+                </Ellipse.Fill>
+            </Ellipse>
+        </Grid>
+    </ControlTemplate>
+    
+</ResourceDictionary>

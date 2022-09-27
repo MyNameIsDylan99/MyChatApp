@@ -8,7 +8,25 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="MVVM\View\" />
+    <None Remove="Icons\phone-call.png" />
+    <None Remove="Icons\plus.png" />
+    <None Remove="Icons\senden.png" />
+    <None Remove="Icons\video.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Icons\phone-call.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Icons\plus.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Icons\senden.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Icons\video.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

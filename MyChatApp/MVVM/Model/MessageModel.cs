@@ -6,6 +6,13 @@ using System.Threading.Tasks;
 
 namespace ModernChat.MVVM.Model {
     internal class MessageModel {
+        public MessageModel(string username, string message, string imageSource, DateTime time) {
+            Username = username;
+            Message = message;
+            UsernameColor = "White";
+            ImageSource = imageSource;
+            Time = time;
+        }
 
         public string Username { get; set; }
         public string Message { get; set; }
@@ -17,5 +24,7 @@ namespace ModernChat.MVVM.Model {
         public bool IsNativeOrigin { get; set; }
 
         public bool? IsFirstMessage { get; set; }
+
+        
     }
 }

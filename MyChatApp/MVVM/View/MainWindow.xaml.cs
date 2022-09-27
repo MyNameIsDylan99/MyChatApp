@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MyChatApp.MVVM.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,7 +33,7 @@ namespace MyChatApp {
             Application.Current.MainWindow.WindowState = WindowState.Minimized;
         }
 
-        private void ButtonMaximize_Click(object sender, RoutedEventArgs e) {
+        void ButtonMaximize_Click(object sender, RoutedEventArgs e) {
 
             if (Application.Current.MainWindow.WindowState != WindowState.Maximized) {
                 Application.Current.MainWindow.WindowState = WindowState.Maximized;
@@ -43,12 +44,13 @@ namespace MyChatApp {
             }
         }
 
-        private void ButtonClose_Click(object sender, RoutedEventArgs e) {
+         void ButtonClose_Click(object sender, RoutedEventArgs e) {
             Application.Current.Shutdown();
         }
 
-        private void ListView_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e) {
+         void ListView_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e) {
 
         }
+
     }
 }
