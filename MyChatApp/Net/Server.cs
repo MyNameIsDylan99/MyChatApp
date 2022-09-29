@@ -12,6 +12,7 @@ namespace ChatClient.Net {
         public PacketReader PacketReader;
 
         TcpClient tcpClient;
+        UdpClient udpClient;
 
         public string Guid;
         public bool GuidReceived => !string.IsNullOrEmpty(Guid);
@@ -23,6 +24,7 @@ namespace ChatClient.Net {
         public Server() {
 
             tcpClient = new TcpClient();
+            udpClient = new UdpClient();
 
         }
 

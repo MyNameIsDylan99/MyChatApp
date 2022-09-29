@@ -19,16 +19,16 @@ namespace ModernChat.MVVM.Model {
         ObservableCollection<MessageModel> messages = new ObservableCollection<MessageModel>();
 
         string lastMessage;
-        public string LastMessage { get { return lastMessage; } set { lastMessage = value ; OnPropertyChanged(); } }
-public string Guid { get; set; }
+        public string LastMessage { get { return lastMessage; } set { lastMessage = value; OnPropertyChanged(); } }
+        public string Guid { get; set; }
 
 
 
-public ContactModel(string username, string UID) {
-    Username = username;
-    ImageSource = @"C:\Users\dylan\source\repos\MyChatApp\MyChatApp\ProfilePictures\DefaultProfilePicture.png";
-    this.Guid = UID;
-}
+        public ContactModel(string username, string guid) {
+            Username = username;
+            ImageSource = @"C:\Users\dylan\source\repos\MyChatApp\MyChatApp\ProfilePictures\DefaultProfilePicture.png";
+            this.Guid = guid;
+        }
     }
 
 }

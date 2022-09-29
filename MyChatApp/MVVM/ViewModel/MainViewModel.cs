@@ -17,6 +17,7 @@ using System.Windows.Interop;
 namespace MyChatApp.MVVM.ViewModel {
     internal class MainViewModel : ObservableObject {
 
+
         public string Username { get; set; }
 
         private string profilePicture = @"C:\Users\dylan\source\repos\MyChatApp\MyChatApp\ProfilePictures\DefaultProfilePicture.png";
@@ -87,13 +88,15 @@ namespace MyChatApp.MVVM.ViewModel {
 
         void UserConnected() {
 
+            var username = server.PacketReader.ReadMessage();
+            var guid = server.PacketReader.ReadMessage();
 
-            var connectedUser = new ContactModel(server.PacketReader.ReadMessage(), server.PacketReader.ReadMessage());
+            var connectedUser = new ContactModel(username, guid);
 
 
             if (!Contacts.Any(x => x.Guid == connectedUser.Guid) && connectedUser.Guid != server.Guid) {
                 Application.Current.Dispatcher.Invoke(() => Contacts.Add(connectedUser));
-                connectedUser.Messages.Add(new MessageModel(connectedUser.Username, $"I just connected and my Guid is {connectedUser.Guid} :)", connectedUser.ImageSource, DateTime.Now));
+                connectedUser.Messages.Add(new MessageModel(connectedUser.Username, "Hello :)", connectedUser.ImageSource, DateTime.Now));
                 connectedUser.LastMessage = connectedUser.Messages.Last().Message;
             }
 
@@ -125,7 +128,7 @@ namespace MyChatApp.MVVM.ViewModel {
         }
 
          void RemoveMessageText() {
-            Message = "";
+            message = "";
         }
 
 
