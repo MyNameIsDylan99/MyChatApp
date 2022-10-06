@@ -31,6 +31,26 @@ namespace MyChatApp.MVVM.ViewModel {
             }
         }
 
+        public enum ConnectionMethods {
+            Localhost,
+            SearchInLan
+        }
+
+        private ConnectionMethods connectionMethod = ConnectionMethods.Localhost;
+         public  ConnectionMethods ConnectionMethod {
+
+            get { return connectionMethod; }
+            set { connectionMethod = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public IEnumerable<ConnectionMethods> ConnectionMethodsValues {
+            get {
+                return Enum.GetValues(typeof(ConnectionMethods)).Cast<ConnectionMethods>();
+            }
+        }
+
         public ObservableCollection<ContactModel> Contacts { get; set; }
 
         private ContactModel? selectedContact;

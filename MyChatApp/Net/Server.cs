@@ -1,7 +1,6 @@
 ﻿using ChatClient.Net.IO;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +12,9 @@ namespace ChatClient.Net {
 
         TcpClient tcpClient;
         UdpClient udpClient;
+
+        public bool UseLocalhost;
+        public string serverIPInLan;
 
         public string Guid;
         public bool GuidReceived => !string.IsNullOrEmpty(Guid);
@@ -26,6 +28,21 @@ namespace ChatClient.Net {
             tcpClient = new TcpClient();
             udpClient = new UdpClient();
 
+        }
+
+        public void ListenForServerInLan() {
+            udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, 36));
+
+            var from = new IPEndPoint(0, 0);
+            var task = Task.Run(() => {
+                while (!tcpClient.Client.Connected) {
+                    var receiveBuffer = udpClient.Receive(ref from);
+
+                    if (serverIPInLan == null) {
+                        serverIPInLan = Encoding.ASCII.GetString(receiveBuffer);
+                    }
+                }
+            });
         }
 
         public void ConnectToServer(string username) {
