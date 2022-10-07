@@ -35,11 +35,12 @@ namespace ChatClient.Net {
             tcpClient = new TcpClient();
             udpClient = new UdpClient();
             udpClient.EnableBroadcast = true;
+            udpClient.ExclusiveAddressUse = false;
 
         }
         void BroadcastServerRequestInLan(object? sender, ElapsedEventArgs e) {
             byte[] serverRequestMessage = Encoding.ASCII.GetBytes("Apple");
-            udpClient.Send(serverRequestMessage,new IPEndPoint(IPAddress.Parse("255.255.255.255"),port));
+            udpClient.Client.SendTo(serverRequestMessage,new IPEndPoint(IPAddress.Parse("255.255.255.255"),port));
         }
 
         System.Timers.Timer StartTimedMethod(int intervall, ElapsedEventHandler timedMethod) {
@@ -52,7 +53,7 @@ namespace ChatClient.Net {
 
         public void SearchForServersInLan(List<string> serverIPsInLan) {
             if (!udpClient.Client.IsBound) {
-                udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, port+1));
+                udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, port));
             }
             var timedUdpRequests=StartTimedMethod(2000, BroadcastServerRequestInLan);
             var from = new IPEndPoint(0, 0);

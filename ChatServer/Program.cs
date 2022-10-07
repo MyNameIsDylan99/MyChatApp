@@ -23,6 +23,7 @@ internal static class Program {
 
         udpClient = new UdpClient();
         udpClient.EnableBroadcast = true;
+        udpClient.ExclusiveAddressUse = false;
         listener = new TcpListener(IPAddress.Any, port);
         listener.Start();
 
