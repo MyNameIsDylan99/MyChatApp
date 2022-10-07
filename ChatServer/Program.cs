@@ -24,6 +24,7 @@ internal static class Program {
     static void Main(string[] args) {
 
         udpClient = new UdpClient();
+        udpClient.EnableBroadcast = true;
         listener = new TcpListener(IPAddress.Any, port);
         listener.Start();
 
