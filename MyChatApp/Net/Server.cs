@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Documents;
+using System.Windows.Markup;
 using static MyChatApp.MVVM.ViewModel.MainViewModel;
 
 namespace ChatClient.Net {
@@ -37,7 +38,7 @@ namespace ChatClient.Net {
         }
         void BroadcastServerRequestInLan(object? sender, ElapsedEventArgs e) {
             byte[] serverRequestMessage = Encoding.ASCII.GetBytes("Apple");
-                udpClient.Send(serverRequestMessage, new IPEndPoint(IPAddress.Broadcast, port));
+            udpClient.Send(serverRequestMessage, serverRequestMessage.Length, "255.255.255.255", port);
         }
 
         System.Timers.Timer StartTimedMethod(int intervall, ElapsedEventHandler timedMethod) {
