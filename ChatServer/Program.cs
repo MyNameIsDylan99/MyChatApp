@@ -22,7 +22,6 @@ internal static class Program {
 
         udpClient = new UdpClient();
         udpClient.EnableBroadcast = true;
-        udpClient.ExclusiveAddressUse = false;
         listener = new TcpListener(IPAddress.Any, port);
         listener.Start();
 
@@ -41,7 +40,7 @@ internal static class Program {
                 Console.WriteLine("Received Udp message");
                 byte[] buffer = Encoding.ASCII.GetBytes("Banana");
                 Console.WriteLine(from.ToString());
-                udpClient.Send(buffer, from);
+                udpClient.Send(buffer, new IPEndPoint(IPAddress.Parse("192.168.1.255"),port+1));
             }
         }
 
