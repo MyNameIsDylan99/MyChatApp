@@ -52,7 +52,7 @@ namespace ChatClient.Net {
 
         public void SearchForServersInLan(List<string> serverIPsInLan) {
             udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, port + 1));
-            var timedUdpRequests=StartTimedMethod(2000, BroadcastServerRequestInLan);
+            var timedUdpRequests=StartTimedMethod(5000, BroadcastServerRequestInLan);
             var from = new IPEndPoint(0, 0);
             var task = Task.Run(() => {
                 while (!tcpClient.Connected) {
