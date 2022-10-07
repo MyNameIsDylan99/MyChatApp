@@ -40,37 +40,22 @@ namespace ChatClient.Net {
             udpClient.EnableBroadcast = true;
 
         }
-        void BroadcastServerRequestInLan(object? sender, ElapsedEventArgs e) {
-            byte[] serverRequestMessage = Encoding.ASCII.GetBytes("Apple");
-            udpClient.Send(serverRequestMessage,new IPEndPoint(IPAddress.Parse("192.168.1.255"),port));
-        }
 
-        System.Timers.Timer StartTimedMethod(int intervall, ElapsedEventHandler timedMethod) {
-                System.Timers.Timer timer = new System.Timers.Timer(intervall);
-                timer.AutoReset = true;
-                timer.Enabled = true;
-                timer.Elapsed += timedMethod;
-            return timer;
-        }
 
         public void SearchForServersInLan(List<string> serverIPsInLan) {
             Task.Run(() => {
-                udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, port + 1));
-                var timedUdpRequests = StartTimedMethod(10, BroadcastServerRequestInLan);
+                udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, port));
                 var from = new IPEndPoint(0, 0);
-
                 while (!tcpClient.Connected) {
                     var receiveBuffer = udpClient.Receive(ref from);
                     string receivedMessage = Encoding.ASCII.GetString(receiveBuffer);
-                    if (receivedMessage.StartsWith("Banana")) {
+                    if (receivedMessage.StartsWith("Apple")) {
                         string serverIP = from.Address.ToString();
                         if (!serverIPsInLan.Contains(serverIP)) {
                             serverIPsInLan.Add(serverIP);
                         }
                     }
                 }
-                udpClient.Close();
-                timedUdpRequests.Stop();
             });
         }
 

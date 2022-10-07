@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Timers;
 
 internal static class Program {
 
@@ -25,25 +26,26 @@ internal static class Program {
         listener = new TcpListener(IPAddress.Any, port);
         listener.Start();
 
-        Task.Run(AcceptTcpClients);
-        ListenForUdpRequests();
+        StartTimedMethod(2000, BroadcastUdpPackets);
+        AcceptTcpClients();
+        
 
     }
 
-    static void ListenForUdpRequests() {
-        var from = new IPEndPoint(0,0);
-        udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, port));
-        while (true) {
-            var recvBuffer = udpClient.Receive(ref from);
-            string receivedMessage = Encoding.ASCII.GetString(recvBuffer);
-            if (receivedMessage == "Apple") {
-                Console.WriteLine("Received Udp message");
-                byte[] buffer = Encoding.ASCII.GetBytes("Banana");
-                Console.WriteLine(from.ToString());
-                udpClient.Send(buffer, from);
-            }
-        }
 
+
+    static void BroadcastUdpPackets(object? sender, ElapsedEventArgs e) {
+        byte[] broadCastMessage = Encoding.ASCII.GetBytes("Apple");
+        udpClient.Send(broadCastMessage, new IPEndPoint(IPAddress.Parse("192.168.1.255"), port));
+        Console.WriteLine("Sent Upd Package");
+    }
+
+    static System.Timers.Timer StartTimedMethod(int intervall, ElapsedEventHandler timedMethod) {
+        System.Timers.Timer timer = new System.Timers.Timer(intervall);
+        timer.AutoReset = true;
+        timer.Enabled = true;
+        timer.Elapsed += timedMethod;
+        return timer;
     }
 
     static void AcceptTcpClients() {
