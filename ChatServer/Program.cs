@@ -15,7 +15,6 @@ internal static class Program {
 
     static UdpClient udpClient;
 
-    static string localIpAdress;
 
     static int port = 11000;
 
@@ -40,9 +39,9 @@ internal static class Program {
             string receivedMessage = Encoding.ASCII.GetString(recvBuffer);
             if (receivedMessage == "Apple") {
                 Console.WriteLine("Received Udp message");
-                byte[] buffer = Encoding.ASCII.GetBytes("Banana" + localIpAdress);
+                byte[] buffer = Encoding.ASCII.GetBytes("Banana");
                 Console.WriteLine(from.ToString());
-                udpClient.Send(buffer, from);
+                udpClient.Client.SendTo(buffer, from);
             }
         }
 
