@@ -15,8 +15,6 @@ internal static class Program {
 
     static UdpClient udpClient;
 
-    static bool? useLocalHost = null;
-
     static string localIpAdress;
 
     static int port = 36;
@@ -34,7 +32,7 @@ internal static class Program {
     }
 
     static void ListenForUdpRequests() {
-        var from = new IPEndPoint(0, 0);
+        var from = new IPEndPoint(IPAddress.Any,port);
         udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, port));
         while (true) {
             var recvBuffer = udpClient.Receive(ref from);
