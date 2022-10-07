@@ -60,7 +60,7 @@ namespace ChatClient.Net {
                     string receivedMessage = Encoding.ASCII.GetString(receiveBuffer);
                     if (receivedMessage.StartsWith("Banana")) {
                         string serverIP = from.Address.ToString();
-                        //if (!serverIPsInLan.Contains(serverIP))
+                        if (!serverIPsInLan.Exists(x=>x.Equals(serverIP)))
                             serverIPsInLan.Add(serverIP);
                     }
                 }
@@ -103,7 +103,6 @@ namespace ChatClient.Net {
 
                         var opcode = PacketReader.ReadByte();
 
-                    
 
                     switch (opcode) {
                         case 1:
