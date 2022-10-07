@@ -41,7 +41,7 @@ internal static class Program {
                 Console.WriteLine("Received Udp message");
                 byte[] buffer = Encoding.ASCII.GetBytes("Banana");
                 Console.WriteLine(from.ToString());
-                udpClient.Client.SendTo(buffer, from);
+                udpClient.Send(buffer, from);
             }
         }
 
