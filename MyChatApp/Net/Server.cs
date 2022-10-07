@@ -53,7 +53,7 @@ namespace ChatClient.Net {
 
         public void SearchForServersInLan(List<string> serverIPsInLan) {
             if (!udpClient.Client.IsBound) {
-                udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, port));
+                udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, port+1));
             }
             var timedUdpRequests=StartTimedMethod(2000, BroadcastServerRequestInLan);
             var from = new IPEndPoint(0, 0);

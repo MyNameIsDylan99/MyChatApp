@@ -33,7 +33,7 @@ internal static class Program {
     }
 
     static void ListenForUdpRequests() {
-        var from = new IPEndPoint(IPAddress.Any,port);
+        var from = new IPEndPoint(IPAddress.Any,port+1);
         udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, port));
         while (true) {
             var recvBuffer = udpClient.Receive(ref from);
