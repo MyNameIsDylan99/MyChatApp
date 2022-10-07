@@ -646,6 +646,27 @@
                     Template="{StaticResource EllipseButton}"
                     Click="ButtonProfilePicture_Click">
             </Button>
+            <StackPanel Grid.Row="1"
+                        Grid.Column="2"
+                        Orientation="Vertical"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                <TextBlock Text="Local IP - Address:"
+                           FontWeight="Bold"
+                           Foreground="White"
+                           FontSize="15"
+                           TextWrapping="Wrap"
+                           VerticalAlignment="Center"
+                           Margin="0,10"/>
+                <TextBlock Text="{Binding LocalIPAddress}"
+                           FontWeight="Bold"
+                           Foreground="White"
+                           FontSize="15"
+                           TextWrapping="Wrap"
+                           VerticalAlignment="Center"
+                           Margin="0,10"/>
+                
+            </StackPanel>
             <TextBlock Text="Connection Method"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"

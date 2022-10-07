@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Net.Security;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,19 +33,6 @@ namespace MyChatApp.MVVM.ViewModel {
             }
         }
 
-        public enum ConnectionMethods {
-            Localhost,
-            SearchInLan
-        }
-
-        private ConnectionMethods connectionMethod = ConnectionMethods.Localhost;
-        public ConnectionMethods ConnectionMethod {
-
-            get { return connectionMethod; }
-            set { connectionMethod = value;
-                OnPropertyChanged();
-            }
-        }
 
         public IEnumerable<ConnectionMethods> ConnectionMethodsValues {
             get {
@@ -77,7 +66,23 @@ namespace MyChatApp.MVVM.ViewModel {
         }
 
         //Networking
+        public enum ConnectionMethods {
+            Localhost,
+            SearchInLan
+        }
+
+        private ConnectionMethods connectionMethod = ConnectionMethods.Localhost;
+        public ConnectionMethods ConnectionMethod {
+
+            get { return connectionMethod; }
+            set {
+                connectionMethod = value;
+                OnPropertyChanged();
+            }
+        }
+
         Server server;
+
         List<string> serverIPsInLan = new List<string>();
         public List<string> ServerIPsInLan { 
             get { return serverIPsInLan; } 
@@ -92,6 +97,9 @@ namespace MyChatApp.MVVM.ViewModel {
                 OnPropertyChanged();
             }
         }
+
+        public string LocalIPAddress { get { return GetLocalIPAddress(); } set { } }
+
         /* Commands */
         public RelayCommand SendMessageCommand { get; set; }
 
@@ -118,6 +126,15 @@ namespace MyChatApp.MVVM.ViewModel {
 
         }
 
+          string GetLocalIPAddress() {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList) {
+                if (ip.AddressFamily == AddressFamily.InterNetwork) {
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("No network adapters with an IPv4 address in the system!");
+        }
 
         void UserConnected() {
 

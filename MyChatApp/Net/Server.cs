@@ -18,7 +18,7 @@ namespace ChatClient.Net {
         public PacketReader PacketReader;
 
         TcpClient tcpClient;
-        UdpClient udpClient;
+        public UdpClient udpClient;
 
         int port = 11000;
 
@@ -33,9 +33,9 @@ namespace ChatClient.Net {
         public Server() {
 
             tcpClient = new TcpClient();
-            udpClient = new UdpClient();
+            udpClient = new UdpClient(new IPEndPoint(IPAddress.Any, port + 1));
             udpClient.EnableBroadcast = true;
-            udpClient.ExclusiveAddressUse = false;
+
 
         }
         void BroadcastServerRequestInLan(object? sender, ElapsedEventArgs e) {
@@ -52,9 +52,7 @@ namespace ChatClient.Net {
         }
 
         public void SearchForServersInLan(List<string> serverIPsInLan) {
-            if (!udpClient.Client.IsBound) {
-                udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, port+1));
-            }
+
             var timedUdpRequests=StartTimedMethod(2000, BroadcastServerRequestInLan);
             var from = new IPEndPoint(0, 0);
             var task = Task.Run(() => {
