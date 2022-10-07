@@ -1,6 +1,8 @@
 ﻿using ChatClient.Net.IO;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -8,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Markup;
 using static MyChatApp.MVVM.ViewModel.MainViewModel;
@@ -51,17 +54,19 @@ namespace ChatClient.Net {
         }
 
         public void SearchForServersInLan(List<string> serverIPsInLan) {
-            udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, port + 1));
-            var timedUdpRequests=StartTimedMethod(5000, BroadcastServerRequestInLan);
-            var from = new IPEndPoint(0, 0);
-            var task = Task.Run(() => {
+            Task.Run(() => {
+                udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, port + 1));
+                var timedUdpRequests = StartTimedMethod(10, BroadcastServerRequestInLan);
+                var from = new IPEndPoint(0, 0);
+
                 while (!tcpClient.Connected) {
                     var receiveBuffer = udpClient.Receive(ref from);
                     string receivedMessage = Encoding.ASCII.GetString(receiveBuffer);
                     if (receivedMessage.StartsWith("Banana")) {
                         string serverIP = from.Address.ToString();
-                        if (!serverIPsInLan.Exists(x=>x.Equals(serverIP)))
+                        if (!serverIPsInLan.Contains(serverIP)) {
                             serverIPsInLan.Add(serverIP);
+                        }
                     }
                 }
                 udpClient.Close();

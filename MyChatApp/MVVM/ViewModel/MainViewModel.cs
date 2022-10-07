@@ -2,6 +2,7 @@
 using ModernChat.MVVM.Model;
 using MyChatApp.Core;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
@@ -23,7 +24,7 @@ namespace MyChatApp.MVVM.ViewModel {
 
         public string Username { get; set; }
 
-        private string profilePicture = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)+"/ProfilePictures/DefaultProfilePicture.png";
+        private string profilePicture = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/ProfilePictures/DefaultProfilePicture.png";
         public string ProfilePicture {
             get => profilePicture; set {
 
@@ -84,12 +85,15 @@ namespace MyChatApp.MVVM.ViewModel {
 
         Server server;
 
-        List<string> serverIPsInLan = new List<string>();
-        public List<string> ServerIPsInLan { 
-            get { return serverIPsInLan; } 
-            set { serverIPsInLan = value;
+        List<string> serverIPsInLan;
+        public List<string> ServerIPsInLan {
+            get { return serverIPsInLan; }
+            set {
+                serverIPsInLan = value;
                 OnPropertyChanged();
-            } }
+            }
+        }
+
         private string selectedServerIP;
         public string SelectedServerIP {
             get { return selectedServerIP; }
@@ -109,6 +113,7 @@ namespace MyChatApp.MVVM.ViewModel {
         public MainViewModel() {
 
             Contacts = new ObservableCollection<ContactModel>();
+            ServerIPsInLan = new List<string>();
 
             message = "";
 
@@ -157,13 +162,13 @@ namespace MyChatApp.MVVM.ViewModel {
 
         }
 
-         void RemoveUser() {
+        void RemoveUser() {
             var uid = server.PacketReader.ReadMessage();
             var user = Contacts.Where(x => x.Guid == uid).FirstOrDefault();
             Application.Current.Dispatcher.Invoke(() => Contacts.Remove(user));
         }
 
-         void MessageReceived() {
+        void MessageReceived() {
             var GUID = server.PacketReader.ReadMessage();
             var msg = server.PacketReader.ReadMessage();
             var sender = Contacts.Where(x => x.Guid == GUID).FirstOrDefault();
@@ -177,12 +182,12 @@ namespace MyChatApp.MVVM.ViewModel {
         void SendMessage() {
             if (selectedContact != null && !string.IsNullOrEmpty(message)) {
                 selectedContact.Messages.Add(new MessageModel(Username, message, ProfilePicture, DateTime.Now));
-                server.SendMessageToServer(message,selectedContact.Guid);
+                server.SendMessageToServer(message, selectedContact.Guid);
                 RemoveMessageText();
             }
         }
 
-         void RemoveMessageText() {
+        void RemoveMessageText() {
             Message = "";
         }
 
