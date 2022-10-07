@@ -192,7 +192,7 @@ namespace MyChatApp.MVVM.ViewModel {
         }
 
         public void LookForServerInLan() {
-            server.SearchForServersInLan(ServerIPsInLan);
+            server.SearchForServersInWlanSubnet(ServerIPsInLan);
         }
     }
 }

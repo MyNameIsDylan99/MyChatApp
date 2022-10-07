@@ -42,7 +42,7 @@ namespace ChatClient.Net {
         }
 
 
-        public void SearchForServersInLan(List<string> serverIPsInLan) {
+        public void SearchForServersInWlanSubnet(List<string> serverIPsInLan) {
             Task.Run(() => {
                 udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, port));
                 var from = new IPEndPoint(0, 0);
@@ -51,9 +51,12 @@ namespace ChatClient.Net {
                     string receivedMessage = Encoding.ASCII.GetString(receiveBuffer);
                     if (receivedMessage.StartsWith("Apple")) {
                         string serverIP = from.Address.ToString();
-                        if (!serverIPsInLan.Contains(serverIP)) {
+                        bool serverIPAlreadyInList = false;
+
+
                             serverIPsInLan.Add(serverIP);
-                        }
+                            
+
                     }
                 }
             });
