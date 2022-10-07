@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Reflection;
@@ -98,7 +99,7 @@ namespace MyChatApp.MVVM.ViewModel {
             }
         }
 
-        public string LocalIPAddress { get { return GetLocalIPAddress(); } set { } }
+        public string LocalIPAddress { get { return GetLocalIPv4(NetworkInterfaceType.Wireless80211); } set { } }
 
         /* Commands */
         public RelayCommand SendMessageCommand { get; set; }
@@ -126,14 +127,18 @@ namespace MyChatApp.MVVM.ViewModel {
 
         }
 
-          string GetLocalIPAddress() {
-            var host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (var ip in host.AddressList) {
-                if (ip.AddressFamily == AddressFamily.InterNetwork) {
-                    return ip.ToString();
+        string GetLocalIPv4(NetworkInterfaceType _type) {
+            string output = "";
+            foreach (NetworkInterface item in NetworkInterface.GetAllNetworkInterfaces()) {
+                if (item.NetworkInterfaceType == _type && item.OperationalStatus == OperationalStatus.Up) {
+                    foreach (UnicastIPAddressInformation ip in item.GetIPProperties().UnicastAddresses) {
+                        if (ip.Address.AddressFamily == AddressFamily.InterNetwork) {
+                            output = ip.Address.ToString();
+                        }
+                    }
                 }
             }
-            throw new Exception("No network adapters with an IPv4 address in the system!");
+            return output;
         }
 
         void UserConnected() {
