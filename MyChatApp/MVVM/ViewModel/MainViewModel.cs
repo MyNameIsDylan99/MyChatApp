@@ -37,7 +37,7 @@ namespace MyChatApp.MVVM.ViewModel {
         }
 
         private ConnectionMethods connectionMethod = ConnectionMethods.Localhost;
-         public  ConnectionMethods ConnectionMethod {
+        public ConnectionMethods ConnectionMethod {
 
             get { return connectionMethod; }
             set { connectionMethod = value;
@@ -78,7 +78,20 @@ namespace MyChatApp.MVVM.ViewModel {
 
         //Networking
         Server server;
-
+        List<string> serverIPsInLan = new List<string>();
+        public List<string> ServerIPsInLan { 
+            get { return serverIPsInLan; } 
+            set { serverIPsInLan = value;
+                OnPropertyChanged();
+            } }
+        private string selectedServerIP;
+        public string SelectedServerIP {
+            get { return selectedServerIP; }
+            set {
+                selectedServerIP = value;
+                OnPropertyChanged();
+            }
+        }
         /* Commands */
         public RelayCommand SendMessageCommand { get; set; }
 
@@ -101,7 +114,7 @@ namespace MyChatApp.MVVM.ViewModel {
 
             SendMessageCommand = new RelayCommand(o => SendMessage());
 
-            ConnectToServerCommand = new RelayCommand(o => server.ConnectToServer(Username), o => !string.IsNullOrEmpty(Username));
+            ConnectToServerCommand = new RelayCommand(o => server.ConnectToServer(Username, connectionMethod, SelectedServerIP), o => !string.IsNullOrEmpty(Username));
 
         }
 
@@ -148,10 +161,12 @@ namespace MyChatApp.MVVM.ViewModel {
         }
 
          void RemoveMessageText() {
-            message = "";
+            Message = "";
         }
 
-
+        public void LookForServerInLan() {
+            server.SearchForServersInLan(ServerIPsInLan);
+        }
     }
 }
 

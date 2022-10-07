@@ -21,9 +21,26 @@ namespace MyChatApp.MVVM.View {
     public partial class LoginWindow : Window {
         MainViewModel mainViewModel;
 
+
         public LoginWindow() {
             InitializeComponent();
             mainViewModel = (MainViewModel)this.DataContext;
+            mainViewModel.LookForServerInLan();
+            this.ConnectionMethodCombobox.DropDownClosed += OnConnectionMethodChoosen;
+        }
+
+
+
+        private void OnConnectionMethodChoosen(object? sender, EventArgs e) {
+            switch (mainViewModel.ConnectionMethod) {
+                case MainViewModel.ConnectionMethods.Localhost:
+                    this.IPList.Visibility = Visibility.Hidden;
+                    break;
+                case MainViewModel.ConnectionMethods.SearchInLan:
+                    this.IPList.Visibility = Visibility.Visible;
+                    break;
+            }
+            
         }
 
         private void ButtonProfilePicture_Click(object sender, RoutedEventArgs e) {
@@ -69,7 +86,8 @@ namespace MyChatApp.MVVM.View {
                 MainWindow mainWindow = new MainWindow();
 
                 mainWindow.DataContext = mainViewModel;
-                mainWindow.ShowDialog();
+                mainWindow.Show();
+                Application.Current.MainWindow = mainWindow;
                 this.Close();
             }
             else {

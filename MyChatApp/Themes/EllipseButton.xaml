@@ -7,7 +7,7 @@
             <Image Source="{Binding ProfilePicture}">
                 <Image.OpacityMask>
                     <ImageBrush ImageSource="C:\Users\dylan\source\repos\MyChatApp\MyChatApp\Icons\black-circle.png"
-                                Stretch="Fill" />
+                                Stretch="Uniform"/>
                 </Image.OpacityMask>
             </Image>
         </Grid>

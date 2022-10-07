@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 internal static class Program {
 
@@ -12,53 +13,38 @@ internal static class Program {
 
     static TcpListener listener;
 
+    static UdpClient udpClient;
+
     static bool? useLocalHost = null;
+
+    static string localIpAdress;
+
+    static int port = 36;
 
     static void Main(string[] args) {
 
-        while (useLocalHost == null) {
-            Console.WriteLine("Do you want to use localhost? y/n");
-            switch (Console.ReadLine()) {
-                case "y":
-                    useLocalHost = true;
-                    Console.WriteLine("You are using localhost.");
-                    break;
-                case "n":
-                    useLocalHost = false;
-                    Console.WriteLine("You are not using localhost.");
-                    break;
-                default:
-                    Console.WriteLine("Please answer with either y for yes or n for no.");
-                    break;
-            }
-        }
-
-        switch (useLocalHost) {
-
-            case false:
-
-                string localIpAdress;
-                string strHostName = System.Net.Dns.GetHostName(); ;
-                IPHostEntry ipEntry = System.Net.Dns.GetHostEntry(strHostName);
-                IPAddress[] addr = ipEntry.AddressList;
-                localIpAdress = addr[addr.Length - 1].ToString(); //ipv4
-
-                if (addr[0].AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6) {
-                    localIpAdress = addr[0].ToString(); //ipv6
-                }
-
-                listener = new TcpListener((IPAddress.Parse(localIpAdress)), 36);
-                break;
-
-            default:
-                listener = new TcpListener(IPAddress.Parse("127.0.0.1"), 36);
-                break;
-        }
-
+        udpClient = new UdpClient();
+        listener = new TcpListener(IPAddress.Any, port);
         listener.Start();
 
-        AcceptTcpClients();
+        Task.Run(AcceptTcpClients);
+        ListenForUdpRequests();
 
+    }
+
+    static void ListenForUdpRequests() {
+        var from = new IPEndPoint(0, 0);
+        udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, port));
+        while (true) {
+            var recvBuffer = udpClient.Receive(ref from);
+            string receivedMessage = Encoding.ASCII.GetString(recvBuffer);
+            if (receivedMessage == "Apple") {
+                Console.WriteLine("Received Udp message");
+                byte[] buffer = Encoding.ASCII.GetBytes("Banana" + localIpAdress);
+                Console.WriteLine(from.ToString());
+                udpClient.Send(buffer, from);
+            }
+        }
 
     }
 
@@ -72,7 +58,7 @@ internal static class Program {
         }
     }
 
-     static void SendClientOwnGuid(Client client) {
+    static void SendClientOwnGuid(Client client) {
 
         var clientGuidPacket = new PacketBuilder();
         clientGuidPacket.WriteOpCode(2);
@@ -85,11 +71,11 @@ internal static class Program {
         var receiverUser = clients.Where(x => x.Guid.ToString() == receiverGuid).First();
 
         var messagePacket = new PacketBuilder();
-            messagePacket.WriteOpCode(5);
-            messagePacket.WriteMessage(senderGuid);
-            messagePacket.WriteMessage(message);
+        messagePacket.WriteOpCode(5);
+        messagePacket.WriteMessage(senderGuid);
+        messagePacket.WriteMessage(message);
 
-            receiverUser.TcpClient.Client.Send(messagePacket.GetPacketBytes());
+        receiverUser.TcpClient.Client.Send(messagePacket.GetPacketBytes());
 
 
     }
