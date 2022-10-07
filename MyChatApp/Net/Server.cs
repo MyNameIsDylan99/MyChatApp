@@ -20,7 +20,7 @@ namespace ChatClient.Net {
         TcpClient tcpClient;
         UdpClient udpClient;
 
-        int port = 36;
+        int port = 11000;
 
 
         public string Guid;

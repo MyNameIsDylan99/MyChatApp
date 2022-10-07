@@ -17,7 +17,7 @@ internal static class Program {
 
     static string localIpAdress;
 
-    static int port = 36;
+    static int port = 11000;
 
     static void Main(string[] args) {
 
