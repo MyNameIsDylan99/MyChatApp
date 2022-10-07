@@ -20,7 +20,7 @@ namespace MyChatApp.MVVM.ViewModel {
 
         public string Username { get; set; }
 
-        private string profilePicture = @"C:\Users\dylan\source\repos\MyChatApp\MyChatApp\ProfilePictures\DefaultProfilePicture.png";
+        private string profilePicture = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)+"/ProfilePictures/DefaultProfilePicture.png";
         public string ProfilePicture {
             get => profilePicture; set {
 

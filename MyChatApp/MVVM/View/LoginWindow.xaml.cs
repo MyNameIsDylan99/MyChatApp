@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -56,7 +57,7 @@ namespace MyChatApp.MVVM.View {
             if (result == true) {
                 // Open document 
                 string sourceFile = dlg.FileName;
-                string destinationFile = @"C:\Users\dylan\source\repos\MyChatApp\MyChatApp\ProfilePictures\" + dlg.SafeFileName;
+                string destinationFile = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/ProfilePictures/" + dlg.SafeFileName;
                 try {
                     File.Copy(sourceFile, destinationFile, true);
                 }
