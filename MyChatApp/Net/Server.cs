@@ -39,7 +39,7 @@ namespace ChatClient.Net {
         }
         void BroadcastServerRequestInLan(object? sender, ElapsedEventArgs e) {
             byte[] serverRequestMessage = Encoding.ASCII.GetBytes("Apple");
-            udpClient.Send(serverRequestMessage,new IPEndPoint(IPAddress.Broadcast,port));
+            udpClient.Send(serverRequestMessage,new IPEndPoint(IPAddress.Parse("255.255.255.255"),port));
         }
 
         System.Timers.Timer StartTimedMethod(int intervall, ElapsedEventHandler timedMethod) {
