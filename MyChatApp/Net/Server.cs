@@ -34,6 +34,7 @@ namespace ChatClient.Net {
 
             tcpClient = new TcpClient();
             udpClient = new UdpClient();
+            udpClient.EnableBroadcast = true;
 
         }
         void BroadcastServerRequestInLan(object? sender, ElapsedEventArgs e) {
