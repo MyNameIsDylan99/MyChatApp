@@ -85,14 +85,8 @@ namespace MyChatApp.MVVM.ViewModel {
 
         Server server;
 
-        List<string> serverIPsInLan;
-        public List<string> ServerIPsInLan {
-            get { return serverIPsInLan; }
-            set {
-                serverIPsInLan = value;
-                OnPropertyChanged();
-            }
-        }
+        public ObservableCollection<string> ServerIPsInLan { get; set; }
+
 
         private string selectedServerIP;
         public string SelectedServerIP {
@@ -113,9 +107,14 @@ namespace MyChatApp.MVVM.ViewModel {
         public MainViewModel() {
 
             Contacts = new ObservableCollection<ContactModel>();
-            ServerIPsInLan = new List<string>();
+            ServerIPsInLan = new ObservableCollection<string>();
             message = "";
-
+            for (int i = 0; i < 10; i++) {
+                if (!ServerIPsInLan.Contains(i.ToString())) {
+                    ServerIPsInLan.Add(i.ToString());
+                }
+            }
+            
             //Networking
             server = new Server();
 
@@ -196,9 +195,11 @@ namespace MyChatApp.MVVM.ViewModel {
         }
 
         void OnFoundServerInSubnetEvent(string serverIP) {
-            if (!ServerIPsInLan.Contains(serverIP)) {
-                ServerIPsInLan.Add(serverIP);
-            }
+            Application.Current.Dispatcher.Invoke(() => {
+                if (!ServerIPsInLan.Contains(serverIP)) {
+                    ServerIPsInLan.Add(serverIP);
+                }
+            });
         }
     }
 }
