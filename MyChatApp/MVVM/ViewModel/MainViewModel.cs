@@ -114,7 +114,6 @@ namespace MyChatApp.MVVM.ViewModel {
 
             Contacts = new ObservableCollection<ContactModel>();
             ServerIPsInLan = new List<string>();
-
             message = "";
 
             //Networking
@@ -123,6 +122,7 @@ namespace MyChatApp.MVVM.ViewModel {
             server.ConnectedEvent += UserConnected;
             server.UserDisconnectedEvent += RemoveUser;
             server.MessageReceivedEvent += MessageReceived;
+            server.FoundServerInSubnetEvent += OnFoundServerInSubnetEvent;
 
             //Commands
 
@@ -192,7 +192,13 @@ namespace MyChatApp.MVVM.ViewModel {
         }
 
         public void LookForServerInLan() {
-            server.SearchForServersInWlanSubnet(ServerIPsInLan);
+            server.SearchForServersInWlanSubnet();
+        }
+
+        void OnFoundServerInSubnetEvent(string serverIP) {
+            if (!ServerIPsInLan.Contains(serverIP)) {
+                ServerIPsInLan.Add(serverIP);
+            }
         }
     }
 }

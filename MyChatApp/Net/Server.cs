@@ -20,6 +20,8 @@ namespace ChatClient.Net {
 
         public PacketReader PacketReader;
 
+        List<string> serverIPsInLan;
+
         TcpClient tcpClient;
         public UdpClient udpClient;
 
@@ -32,6 +34,7 @@ namespace ChatClient.Net {
         public event Action ConnectedEvent;
         public event Action UserDisconnectedEvent;
         public event Action MessageReceivedEvent;
+        public event Action<string> FoundServerInSubnetEvent;
 
         public Server() {
 
@@ -42,24 +45,31 @@ namespace ChatClient.Net {
         }
 
 
-        public void SearchForServersInWlanSubnet(List<string> serverIPsInLan) {
+
+        public void SearchForServersInWlanSubnet() {
+
+            udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, port));
+            var from = new IPEndPoint(0, 0);
             Task.Run(() => {
-                udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, port));
-                var from = new IPEndPoint(0, 0);
+
                 while (!tcpClient.Connected) {
                     var receiveBuffer = udpClient.Receive(ref from);
                     string receivedMessage = Encoding.ASCII.GetString(receiveBuffer);
                     if (receivedMessage.StartsWith("Apple")) {
                         string serverIP = from.Address.ToString();
-                        bool serverIPAlreadyInList = false;
-
-
-                            serverIPsInLan.Add(serverIP);
-                            
-
+                        FoundServerInSubnetEvent.Invoke(serverIP);
+                        }
                     }
-                }
             });
+
+        }
+
+        System.Timers.Timer StartTimedMethod(int intervall, ElapsedEventHandler timedMethod) {
+            System.Timers.Timer timer = new System.Timers.Timer(intervall);
+            timer.AutoReset = true;
+            timer.Enabled = true;
+            timer.Elapsed += timedMethod;
+            return timer;
         }
 
         public void ConnectToServer(string username, ConnectionMethods connectionMethod, string selectedServerIp) {
@@ -94,7 +104,7 @@ namespace ChatClient.Net {
             Task.Run(() => {
                 while (true) {
 
-                        var opcode = PacketReader.ReadByte();
+                    var opcode = PacketReader.ReadByte();
 
 
                     switch (opcode) {
@@ -126,7 +136,7 @@ namespace ChatClient.Net {
             tcpClient.Client.Send(messagePacket.GetPacketBytes());
         }
 
-        public  string GetLocalIPAddress() {
+        public string GetLocalIPAddress() {
             var host = Dns.GetHostEntry(Dns.GetHostName());
             foreach (var ip in host.AddressList) {
                 if (ip.AddressFamily == AddressFamily.InterNetwork) {
