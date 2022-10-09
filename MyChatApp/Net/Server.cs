@@ -13,7 +13,7 @@ using System.Timers;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Markup;
-using static MyChatApp.MVVM.ViewModel.MainViewModel;
+using static MyChatApp.MVVM.ViewModel.LoginViewModel;
 
 namespace ChatClient.Net {
     internal class Server {
@@ -23,9 +23,9 @@ namespace ChatClient.Net {
         List<string> serverIPsInLan;
 
         TcpClient tcpClient;
-        public UdpClient udpClient;
+        static UdpClient udpClient = new UdpClient();
 
-        int port = 11000;
+        const int port = 11000;
 
 
         public string Guid;
@@ -34,12 +34,12 @@ namespace ChatClient.Net {
         public event Action ConnectedEvent;
         public event Action UserDisconnectedEvent;
         public event Action MessageReceivedEvent;
+        public event Action ServerShutdownEvent;
         public event Action<string> FoundServerInSubnetEvent;
 
         public Server() {
 
             tcpClient = new TcpClient();
-            udpClient = new UdpClient();
             udpClient.EnableBroadcast = true;
 
         }
@@ -48,7 +48,9 @@ namespace ChatClient.Net {
 
         public void SearchForServersInWlanSubnet() {
 
+            if(!udpClient.Client.IsBound)
             udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, port));
+
             var from = new IPEndPoint(0, 0);
             Task.Run(() => {
 
@@ -102,7 +104,8 @@ namespace ChatClient.Net {
 
         void ReadPackets() {
             Task.Run(() => {
-                while (true) {
+                bool readPackets = true;
+                while (readPackets) {
 
                     var opcode = PacketReader.ReadByte();
 
@@ -119,6 +122,10 @@ namespace ChatClient.Net {
                             break;
                         case 10:
                             UserDisconnectedEvent?.Invoke();
+                            break;
+                        case 11:
+                            ServerShutdownEvent?.Invoke();
+                            readPackets = false;
                             break;
                         default:
                             Console.WriteLine("ah yes..");

@@ -17,10 +17,10 @@ internal static class Program {
     static UdpClient udpClient;
 
 
-    static int port = 11000;
+     const int port = 11000;
 
     static void Main(string[] args) {
-
+        AppDomain.CurrentDomain.ProcessExit += new EventHandler(BroadcastServerShutdown);
         udpClient = new UdpClient();
         udpClient.EnableBroadcast = true;
         listener = new TcpListener(IPAddress.Any, port);
@@ -119,6 +119,15 @@ internal static class Program {
             var broadcastPacket = new PacketBuilder();
             broadcastPacket.WriteOpCode(10);
             broadcastPacket.WriteMessage(guid);
+            user.TcpClient.Client.Send(broadcastPacket.GetPacketBytes());
+        }
+    }
+
+    public static void BroadcastServerShutdown(object sender, EventArgs e) {
+        foreach (var user in clients) {
+
+            var broadcastPacket = new PacketBuilder();
+            broadcastPacket.WriteOpCode(11);
             user.TcpClient.Client.Send(broadcastPacket.GetPacketBytes());
         }
     }

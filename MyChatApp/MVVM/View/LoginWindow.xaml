@@ -12,6 +12,17 @@
         Height="300"
         xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2">
     <Window.Resources>
+        <ControlTemplate TargetType="Button"
+                         x:Key="EllipseButton">
+            <Grid>
+                <Image Source="/ProfilePictures/DefaultProfilePicture.png">
+                    <Image.OpacityMask>
+                        <ImageBrush ImageSource="/Icons/black-circle.png"
+                                    Stretch="Uniform" />
+                    </Image.OpacityMask>
+                </Image>
+            </Grid>
+        </ControlTemplate>
         <Style x:Key="FocusVisual">
             <Setter Property="Control.Template">
                 <Setter.Value>
@@ -580,9 +591,11 @@
     </Window.Resources>
 
     <Window.DataContext>
-        <viewmodel:MainViewModel />
+        <viewmodel:LoginViewModel />
     </Window.DataContext>
+
     <Viewbox Margin="10">
+
         <Grid Width="350"
               Height="275"
               Background="Transparent"
@@ -599,6 +612,7 @@
                 <ColumnDefinition />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
+
 
             <TextBlock Text="Username"
                        HorizontalAlignment="Center"
@@ -644,7 +658,7 @@
                     Grid.Row="1"
                     Background="Transparent"
                     Template="{StaticResource EllipseButton}"
-                    Click="ButtonProfilePicture_Click">
+                    Command="{Binding ChangeProfilePictureCommand}">
             </Button>
             <StackPanel Grid.Row="1"
                         Grid.Column="2"
@@ -657,15 +671,15 @@
                            FontSize="15"
                            TextWrapping="Wrap"
                            VerticalAlignment="Center"
-                           Margin="0,10"/>
+                           Margin="0,10" />
                 <TextBlock Text="{Binding LocalIPAddress}"
                            FontWeight="Bold"
                            Foreground="White"
                            FontSize="15"
                            TextWrapping="Wrap"
                            VerticalAlignment="Center"
-                           Margin="0,10"/>
-                
+                           Margin="0,10" />
+
             </StackPanel>
             <TextBlock Text="Connection Method"
                        HorizontalAlignment="Center"

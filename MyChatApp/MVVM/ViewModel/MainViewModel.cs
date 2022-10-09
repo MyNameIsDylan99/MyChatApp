@@ -21,26 +21,27 @@ using System.Windows.Interop;
 namespace MyChatApp.MVVM.ViewModel {
     internal class MainViewModel : ObservableObject {
 
+        string username;
+        public string Username {
+            get => username; 
+            set {
+                    username = value;
+                    OnPropertyChanged();
+            }
+        }
 
-        public string Username { get; set; }
+        private string profilePictureSource;
+        public string ProfilePictureSource {
+            get => profilePictureSource; set {
 
-        private string profilePicture = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/ProfilePictures/DefaultProfilePicture.png";
-        public string ProfilePicture {
-            get => profilePicture; set {
-
-                if (value != profilePicture) {
-                    profilePicture = value;
+                if (value != profilePictureSource) {
+                    profilePictureSource = value;
                     OnPropertyChanged();
                 }
             }
         }
 
-
-        public IEnumerable<ConnectionMethods> ConnectionMethodsValues {
-            get {
-                return Enum.GetValues(typeof(ConnectionMethods)).Cast<ConnectionMethods>();
-            }
-        }
+        public Action OnServerShutdown;
 
         public ObservableCollection<ContactModel> Contacts { get; set; }
 
@@ -68,108 +69,57 @@ namespace MyChatApp.MVVM.ViewModel {
         }
 
         //Networking
-        public enum ConnectionMethods {
-            Localhost,
-            SearchInLan
-        }
 
-        private ConnectionMethods connectionMethod = ConnectionMethods.Localhost;
-        public ConnectionMethods ConnectionMethod {
-
-            get { return connectionMethod; }
-            set {
-                connectionMethod = value;
-                OnPropertyChanged();
-            }
-        }
-
-        Server server;
-
-        public ObservableCollection<string> ServerIPsInLan { get; set; }
-
-
-        private string selectedServerIP;
-        public string SelectedServerIP {
-            get { return selectedServerIP; }
-            set {
-                selectedServerIP = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string LocalIPAddress { get { return GetLocalIPv4(NetworkInterfaceType.Wireless80211); } set { } }
+        public Server Server;
 
         /* Commands */
         public RelayCommand SendMessageCommand { get; set; }
 
-        public RelayCommand ConnectToServerCommand { get; set; }
-
         public MainViewModel() {
 
             Contacts = new ObservableCollection<ContactModel>();
-            ServerIPsInLan = new ObservableCollection<string>();
-            message = "";
-            for (int i = 0; i < 10; i++) {
-                if (!ServerIPsInLan.Contains(i.ToString())) {
-                    ServerIPsInLan.Add(i.ToString());
-                }
-            }
-            
-            //Networking
-            server = new Server();
+            Message = "";
+
+            //Commands
+            SendMessageCommand = new RelayCommand(o => SendMessage());
+        }
+
+        public void GetDataFromLoginViewModel(string username, string profilePictureSource, Server server) {
+            this.Username = username;
+            this.ProfilePictureSource = profilePictureSource;
+            this.Server = server;
 
             server.ConnectedEvent += UserConnected;
             server.UserDisconnectedEvent += RemoveUser;
             server.MessageReceivedEvent += MessageReceived;
-            server.FoundServerInSubnetEvent += OnFoundServerInSubnetEvent;
-
-            //Commands
-
-            SendMessageCommand = new RelayCommand(o => SendMessage());
-
-            ConnectToServerCommand = new RelayCommand(o => server.ConnectToServer(Username, connectionMethod, SelectedServerIP), o => !string.IsNullOrEmpty(Username));
-
-        }
-
-        string GetLocalIPv4(NetworkInterfaceType _type) {
-            string output = "";
-            foreach (NetworkInterface item in NetworkInterface.GetAllNetworkInterfaces()) {
-                if (item.NetworkInterfaceType == _type && item.OperationalStatus == OperationalStatus.Up) {
-                    foreach (UnicastIPAddressInformation ip in item.GetIPProperties().UnicastAddresses) {
-                        if (ip.Address.AddressFamily == AddressFamily.InterNetwork) {
-                            output = ip.Address.ToString();
-                        }
-                    }
-                }
-            }
-            return output;
+            server.ServerShutdownEvent += OnServerShutdown;
         }
 
         void UserConnected() {
 
-            var username = server.PacketReader.ReadMessage();
-            var guid = server.PacketReader.ReadMessage();
+            var username = Server.PacketReader.ReadMessage();
+            var guid = Server.PacketReader.ReadMessage();
 
             var connectedUser = new ContactModel(username, guid);
 
 
-            if (!Contacts.Any(x => x.Guid == connectedUser.Guid) && connectedUser.Guid != server.Guid) {
+            if (!Contacts.Any(x => x.Guid == connectedUser.Guid) && connectedUser.Guid != Server.Guid) {
                 Application.Current.Dispatcher.Invoke(() => Contacts.Add(connectedUser));
-                connectedUser.Messages.Add(new MessageModel(connectedUser.Username, "Hello :)", connectedUser.ImageSource, DateTime.Now));
+                connectedUser.Messages.Add(new MessageModel(connectedUser.Username, "I just connected :)", connectedUser.ImageSource, DateTime.Now));
                 connectedUser.LastMessage = connectedUser.Messages.Last().Message;
             }
 
         }
 
         void RemoveUser() {
-            var uid = server.PacketReader.ReadMessage();
+            var uid = Server.PacketReader.ReadMessage();
             var user = Contacts.Where(x => x.Guid == uid).FirstOrDefault();
             Application.Current.Dispatcher.Invoke(() => Contacts.Remove(user));
         }
 
         void MessageReceived() {
-            var GUID = server.PacketReader.ReadMessage();
-            var msg = server.PacketReader.ReadMessage();
+            var GUID = Server.PacketReader.ReadMessage();
+            var msg = Server.PacketReader.ReadMessage();
             var sender = Contacts.Where(x => x.Guid == GUID).FirstOrDefault();
 
             var msgModel = new MessageModel(sender.Username, msg, sender.ImageSource, DateTime.Now);
@@ -180,8 +130,8 @@ namespace MyChatApp.MVVM.ViewModel {
 
         void SendMessage() {
             if (selectedContact != null && !string.IsNullOrEmpty(message)) {
-                selectedContact.Messages.Add(new MessageModel(Username, message, ProfilePicture, DateTime.Now));
-                server.SendMessageToServer(message, selectedContact.Guid);
+                selectedContact.Messages.Add(new MessageModel(Username, message, ProfilePictureSource, DateTime.Now));
+                Server.SendMessageToServer(message, selectedContact.Guid);
                 RemoveMessageText();
             }
         }
@@ -190,17 +140,6 @@ namespace MyChatApp.MVVM.ViewModel {
             Message = "";
         }
 
-        public void LookForServerInLan() {
-            server.SearchForServersInWlanSubnet();
-        }
-
-        void OnFoundServerInSubnetEvent(string serverIP) {
-            Application.Current.Dispatcher.Invoke(() => {
-                if (!ServerIPsInLan.Contains(serverIP)) {
-                    ServerIPsInLan.Add(serverIP);
-                }
-            });
-        }
     }
 }
 

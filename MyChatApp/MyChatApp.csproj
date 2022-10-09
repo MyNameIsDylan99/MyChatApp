@@ -8,10 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Icons\black-circle.png" />
     <None Remove="Icons\phone-call.png" />
     <None Remove="Icons\plus.png" />
     <None Remove="Icons\senden.png" />
     <None Remove="Icons\video.png" />
+    <None Remove="ProfilePictures\DefaultProfilePicture.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,15 +32,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Icons\black-circle.png">
+    <Content Include="Icons\black-circle.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Icons\blackcircle.png">
+    </Content>
+    <Content Include="ProfilePictures\DefaultProfilePicture.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="ProfilePictures\DefaultProfilePicture.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
   </ItemGroup>
 
 </Project>
