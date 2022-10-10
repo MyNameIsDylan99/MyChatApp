@@ -14,9 +14,11 @@ namespace ChatServer {
 
         public Guid Guid { get; set; }
 
+        public byte[] ProfileImgData { get; set; }
+
         public TcpClient TcpClient { get; set; }
 
-        PacketReader packetReader;
+         PacketReader packetReader;
 
         public Client(TcpClient tcpClient) { 
             this.TcpClient = tcpClient;
@@ -25,7 +27,7 @@ namespace ChatServer {
 
             var opcode = packetReader.ReadByte();
             Username = packetReader.ReadMessage();
-
+            ProfileImgData = packetReader.ReadImage();
             Console.WriteLine($"{DateTime.Now}: Client {Username} has connected.");
 
             Task.Run(Process);

@@ -99,8 +99,9 @@ namespace MyChatApp.MVVM.ViewModel {
 
             var username = Server.PacketReader.ReadMessage();
             var guid = Server.PacketReader.ReadMessage();
+            var profilePictureImgSource = Server.PacketReader.ReadImage();
 
-            var connectedUser = new ContactModel(username, guid);
+            var connectedUser = new ContactModel(username, guid, profilePictureImgSource);
 
 
             if (!Contacts.Any(x => x.Guid == connectedUser.Guid) && connectedUser.Guid != Server.Guid) {

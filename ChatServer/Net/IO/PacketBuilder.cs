@@ -23,6 +23,10 @@ namespace ChatServer.Net.IO {
             _ms.Write(Encoding.ASCII.GetBytes(msg));
         }
 
+        public void AddBytesToPacket(byte[] bytes) {
+            _ms.Write(bytes);
+        }
+
         public byte[] GetPacketBytes() {
             return _ms.ToArray();
         }

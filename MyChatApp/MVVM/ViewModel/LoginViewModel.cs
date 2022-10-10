@@ -73,7 +73,7 @@ namespace MyChatApp.MVVM.ViewModel {
             ServerIPsInLan = new ObservableCollection<string>();
             Server.FoundServerInSubnetEvent += OnFoundServerInSubnetEvent;
             LookForServerInLan();
-            ConnectToServerCommand = new RelayCommand(o => Server.ConnectToServer(Username, connectionMethod, SelectedServerIP), o => !string.IsNullOrEmpty(Username));
+            ConnectToServerCommand = new RelayCommand(o => Server.ConnectToServer(Username,ProfilePictureSource, connectionMethod, SelectedServerIP), o => !string.IsNullOrEmpty(Username));
             ChangeProfilePictureCommand = new RelayCommand(ChooseProfilePicture);
         }
 

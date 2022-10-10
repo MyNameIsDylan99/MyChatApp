@@ -3,6 +3,7 @@ using ChatServer.Net.IO;
 using System;
 using System.ComponentModel;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -16,6 +17,9 @@ internal static class Program {
 
     static UdpClient udpClient;
 
+    static string localIPAddress = GetLocalIPv4(NetworkInterfaceType.Wireless80211);
+
+    static string localBroadcastAddress = localIPAddress.Substring(0, localIPAddress.Length-localIPAddress.IndexOf("."))+"255";
 
      const int port = 11000;
 
@@ -36,7 +40,7 @@ internal static class Program {
 
     static void BroadcastUdpPackets(object? sender, ElapsedEventArgs e) {
         byte[] broadCastMessage = Encoding.ASCII.GetBytes("Apple");
-        udpClient.Send(broadCastMessage, new IPEndPoint(IPAddress.Parse("192.168.1.255"), port));
+        udpClient.Send(broadCastMessage, new IPEndPoint(IPAddress.Parse(localBroadcastAddress), port));
         Console.WriteLine("Sent Upd Package");
     }
 
@@ -103,6 +107,7 @@ internal static class Program {
                 broadcastPacket.WriteOpCode(1);
                 broadcastPacket.WriteMessage(_client.Username);
                 broadcastPacket.WriteMessage(_client.Guid.ToString());
+                broadcastPacket.AddBytesToPacket(_client.ProfileImgData);
 
                 client.TcpClient.Client.Send(broadcastPacket.GetPacketBytes());
 
@@ -137,6 +142,20 @@ internal static class Program {
         clients.Remove(disconnectedUser);
         return disconnectedUser;
     }
+    static string GetLocalIPv4(NetworkInterfaceType _type) {
+        string output = "";
+        foreach (NetworkInterface item in NetworkInterface.GetAllNetworkInterfaces()) {
+            if (item.NetworkInterfaceType == _type && item.OperationalStatus == OperationalStatus.Up) {
+                foreach (UnicastIPAddressInformation ip in item.GetIPProperties().UnicastAddresses) {
+                    if (ip.Address.AddressFamily == AddressFamily.InterNetwork) {
+                        output = ip.Address.ToString();
+                    }
+                }
+            }
+        }
+        return output;
+    }
+
 }
 
 

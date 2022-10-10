@@ -25,5 +25,21 @@ namespace ChatServer.Net.IO {
             return msg;
         }
 
+        public byte[] ReadImage() {
+            var ms = new MemoryStream();
+            var length = ReadInt32();
+            byte[] imageFormatBuffer = new byte[length];
+            _ns.Read(imageFormatBuffer, 0, length);
+            var imageByteLength = ReadInt32();
+            byte[] imageBuffer = new byte[imageByteLength];
+            _ns.Read(imageBuffer, 0, imageByteLength);
+
+            ms.Write(BitConverter.GetBytes(length));
+            ms.Write(imageFormatBuffer);
+            ms.Write(BitConverter.GetBytes(imageByteLength));
+            ms.Write(imageBuffer);
+            return ms.ToArray();
+        }
+
     }
 }

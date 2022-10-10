@@ -24,9 +24,9 @@ namespace ModernChat.MVVM.Model {
 
 
 
-        public ContactModel(string username, string guid) {
+        public ContactModel(string username, string guid, string imageSource) {
             Username = username;
-            ImageSource = @"C:\Users\dylan\source\repos\MyChatApp\MyChatApp\ProfilePictures\DefaultProfilePicture.png";
+            ImageSource = imageSource;
             this.Guid = guid;
         }
     }

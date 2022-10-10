@@ -74,19 +74,20 @@ namespace ChatClient.Net {
             return timer;
         }
 
-        public void ConnectToServer(string username, ConnectionMethods connectionMethod, string selectedServerIp) {
+        public void ConnectToServer(string username,string profilePictureSource, ConnectionMethods connectionMethod, string selectedServerIp) {
             if (!tcpClient.Connected) {
-
+                var ip="";
                 switch (connectionMethod) {
                     case ConnectionMethods.Localhost:
 
-                        tcpClient.Connect("127.0.0.1", port);
+                        ip = "127.0.0.1";
 
                         break;
                     case ConnectionMethods.SearchInLan:
-                        tcpClient.Connect(selectedServerIp, port);
+                        ip = selectedServerIp;
                         break;
                 }
+                tcpClient.Connect(ip, port);
                 PacketReader = new PacketReader(tcpClient.GetStream());
 
                 if (!string.IsNullOrEmpty(username)) {
@@ -94,6 +95,7 @@ namespace ChatClient.Net {
                     var connectPacket = new PacketBuilder();
                     connectPacket.WriteOpCode(0);
                     connectPacket.WriteMessage(username);
+                    connectPacket.WriteImage(profilePictureSource);
                     tcpClient.Client.Send(connectPacket.GetPacketBytes());
                 }
 
