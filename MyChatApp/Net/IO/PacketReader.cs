@@ -39,10 +39,11 @@ namespace ChatClient.Net.IO {
             _ns.Read(imageFormatBuffer, 0, length);
             var imageByteLength = ReadInt32();
             byte[] imageBuffer = new byte[imageByteLength];
-            var bytesReceived = 0;
-            while (_ns.DataAvailable && bytesReceived == imageByteLength) {
-                bytesReceived = _ns.Read(imageBuffer, 0, imageByteLength);
+            var bytesRead = 0;
+            do  {
+                bytesRead = _ns.Read(imageBuffer, 0, imageByteLength);
             }
+            while (_ns.DataAvailable && bytesRead >= imageByteLength);
 
             //MemoryStream ms = new MemoryStream(imageBuffer);
 
