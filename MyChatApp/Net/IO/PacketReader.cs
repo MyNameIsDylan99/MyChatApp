@@ -43,35 +43,35 @@ namespace ChatClient.Net.IO {
                 _ns.Read(imageBuffer, 0, imageByteLength);
             }
 
-            //MemoryStream ms = new MemoryStream(imageBuffer);
+            MemoryStream ms = new MemoryStream(imageBuffer);
 
             var imgFormatString = Encoding.ASCII.GetString(imageFormatBuffer);
-            //var img = Image.FromStream(ms);
+            var img = Image.FromStream(ms);
 
-            //var imgFormat = ImageFormat.Png;
-            //switch (imgFormatString) {
-            //    case "png":
-            //        imgFormat = ImageFormat.Png;
-            //        break;
-            //    case "jpeg":
-            //        imgFormat = ImageFormat.Jpeg;
-            //        break;
-            //    case "gif":
-            //        imgFormat = ImageFormat.Gif;
-            //        break;
-            //    case "jpg":
-            //        imgFormat = ImageFormat.Jpeg;
-            //        break;
+            var imgFormat = ImageFormat.Png;
+            switch (imgFormatString) {
+                case "png":
+                    imgFormat = ImageFormat.Png;
+                    break;
+                case "jpeg":
+                    imgFormat = ImageFormat.Jpeg;
+                    break;
+                case "gif":
+                    imgFormat = ImageFormat.Gif;
+                    break;
+                case "jpg":
+                    imgFormat = ImageFormat.Jpeg;
+                    break;
 
-            //}
+            }
 
             imagePath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\ProfilePictures\" + DateTime.Now.ToString().Replace(":", "_") + "." + imgFormatString;
 
-            BinaryWriter bWriter = new BinaryWriter(File.Open(imagePath, FileMode.Create));
-            bWriter.Write(imageBuffer);
-            bWriter.Close();
+            //BinaryWriter bWriter = new BinaryWriter(File.Open(imagePath, FileMode.Create));
+            //bWriter.Write(imageBuffer);
+            //bWriter.Close();
 
-            //img.Save(imagePath, imgFormat);
+            img.Save(imagePath, imgFormat);
             return imagePath;
         }
 
