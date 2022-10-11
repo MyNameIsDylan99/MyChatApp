@@ -26,6 +26,7 @@ namespace ChatClient.Net {
 
         const int port = 11000;
 
+        const int receiveAndSendBufferSize = 500000000;
 
         public string Guid;
         public bool GuidReceived => !string.IsNullOrEmpty(Guid);
@@ -47,8 +48,8 @@ namespace ChatClient.Net {
         public Server() {
 
             tcpClient = new TcpClient();
-            tcpClient.ReceiveBufferSize = 16384000;
-            tcpClient.SendBufferSize = 16384000;
+            tcpClient.ReceiveBufferSize = receiveAndSendBufferSize;
+            tcpClient.SendBufferSize = receiveAndSendBufferSize;
             udpClient.EnableBroadcast = true;
 
         }
@@ -71,14 +72,6 @@ namespace ChatClient.Net {
                     }
             });
 
-        }
-
-        System.Timers.Timer StartTimedMethod(int intervall, ElapsedEventHandler timedMethod) {
-            System.Timers.Timer timer = new System.Timers.Timer(intervall);
-            timer.AutoReset = true;
-            timer.Enabled = true;
-            timer.Elapsed += timedMethod;
-            return timer;
         }
 
         public void ConnectToServer(string username,string profilePictureSource, ConnectionMethods connectionMethod, string selectedServerIp) {
@@ -117,22 +110,23 @@ namespace ChatClient.Net {
                 while (readPackets) {
 
                     var opcode = PacketReader.ReadByte();
+                    var opCodeAsEnum = (OpCode)opcode;
 
 
-                    switch (opcode) {
-                        case 1:
+                    switch (opCodeAsEnum) {
+                        case OpCode.NewClientConnected:
                             ConnectedEvent?.Invoke();
                             break;
-                        case 2:
+                        case OpCode.Guid:
                             Guid = PacketReader.ReadMessage();
                             break;
-                        case 5:
+                        case OpCode.Message:
                             MessageReceivedEvent?.Invoke();
                             break;
-                        case 10:
+                        case OpCode.ClientDisconnected:
                             UserDisconnectedEvent?.Invoke();
                             break;
-                        case 11:
+                        case OpCode.ServerShutdown:
                             ServerShutdownEvent?.Invoke();
                             readPackets = false;
                             break;

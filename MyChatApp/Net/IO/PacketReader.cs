@@ -63,7 +63,7 @@ namespace ChatClient.Net.IO {
 
             imagePath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\ProfilePictures\" + DateTime.Now.ToString().Replace(":", "_") + "." + imgFormatString;
 
-                img.Save(imagePath, imgFormat);
+                img.Save(imagePath);
 
             
 

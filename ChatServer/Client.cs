@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using static Program;
 
 namespace ChatServer {
     internal class Client {
@@ -16,21 +17,23 @@ namespace ChatServer {
 
         public byte[] ProfileImgData { get; set; }
 
+        const int receiveAndSendBufferSize = 500000000;
+
         public TcpClient TcpClient { get; set; }
 
          PacketReader packetReader;
 
         public Client(TcpClient tcpClient) { 
             this.TcpClient = tcpClient;
-            tcpClient.ReceiveBufferSize = 16384000;
-            tcpClient.SendBufferSize = 16384000;
+            tcpClient.ReceiveBufferSize = receiveAndSendBufferSize;
+            tcpClient.SendBufferSize = receiveAndSendBufferSize;
             Guid = Guid.NewGuid();
             packetReader = new PacketReader(TcpClient.GetStream());
 
             var opcode = packetReader.ReadByte();
             Username = packetReader.ReadMessage();
             ProfileImgData = packetReader.ReadImage();
-            Console.WriteLine($"{DateTime.Now}: Client {Username} has connected.");
+            Console.WriteLine($"{DateTime.Now}: Client {Username} with guid: {Guid.ToString()} has connected.");
 
             Task.Run(Process);
 
@@ -41,8 +44,9 @@ namespace ChatServer {
             while (true) {
                 try {
                     var opcode = packetReader.ReadByte();
-                    switch (opcode) {
-                        case 5:
+                    var opCodeAsEnum = (OpCode)opcode;
+                    switch (opCodeAsEnum) {
+                        case OpCode.Message:
                             var receiverGuid = packetReader.ReadMessage();
                             var msg = packetReader.ReadMessage();
                             var receiver = Program.clients.Where(x => x.Guid.ToString() == receiverGuid).FirstOrDefault();
