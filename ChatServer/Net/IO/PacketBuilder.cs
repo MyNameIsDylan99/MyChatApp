@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Program;
 
 namespace ChatServer.Net.IO {
     internal class PacketBuilder {
@@ -13,8 +14,9 @@ namespace ChatServer.Net.IO {
             _ms = new MemoryStream();
         }
 
-        public void WriteOpCode(byte opcode) {
-            _ms.WriteByte(opcode);
+        public void WriteOpCode(OpCode opCode) {
+            var opCodeAsByte = (byte)opCode;
+            _ms.WriteByte(opCodeAsByte);
         }
 
         public void WriteMessage(string msg) {

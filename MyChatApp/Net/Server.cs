@@ -20,9 +20,8 @@ namespace ChatClient.Net {
 
         public PacketReader PacketReader;
 
-        List<string> serverIPsInLan;
-
         TcpClient tcpClient;
+
         static UdpClient udpClient = new UdpClient();
 
         const int port = 11000;
@@ -37,6 +36,14 @@ namespace ChatClient.Net {
         public event Action ServerShutdownEvent;
         public event Action<string> FoundServerInSubnetEvent;
 
+        public enum OpCode : byte {
+            NewClientConnected = 1,
+            Guid = 2,
+            Message = 5,
+            ClientDisconnected = 10,
+            ServerShutdown = 11
+        }
+
         public Server() {
 
             tcpClient = new TcpClient();
@@ -45,8 +52,6 @@ namespace ChatClient.Net {
             udpClient.EnableBroadcast = true;
 
         }
-
-
 
         public void SearchForServersInWlanSubnet() {
 
@@ -141,7 +146,7 @@ namespace ChatClient.Net {
 
         public void SendMessageToServer(string message, string receiverGuid) {
             var messagePacket = new PacketBuilder();
-            messagePacket.WriteOpCode(5);
+            messagePacket.WriteOpCode(OpCode.Message);
             messagePacket.WriteMessage(receiverGuid);
             messagePacket.WriteMessage(message);
             tcpClient.Client.Send(messagePacket.GetPacketBytes());

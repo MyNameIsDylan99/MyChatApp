@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Interop;
-
+using static ChatClient.Net.Server;
 
 namespace ChatClient.Net.IO {
     internal class PacketBuilder {
@@ -18,8 +18,9 @@ namespace ChatClient.Net.IO {
             _ms = new MemoryStream();
         }
 
-        public void WriteOpCode(byte opcode) {
-            _ms.WriteByte(opcode);
+        public void WriteOpCode(OpCode opCode) {
+            var opCodeAsByte = (byte)opCode;
+            _ms.WriteByte(opCodeAsByte);
         }
 
         public void WriteMessage(string msg) {

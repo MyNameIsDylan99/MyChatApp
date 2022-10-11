@@ -23,6 +23,14 @@ internal static class Program {
 
      const int port = 11000;
 
+    public enum OpCode : byte {
+        NewClientConnected = 1,
+        Guid = 2,
+        Message = 5,
+        ClientDisconnected = 10,
+        ServerShutdown = 11
+    }
+
     static void Main(string[] args) {
         AppDomain.CurrentDomain.ProcessExit += new EventHandler(BroadcastServerShutdown);
         udpClient = new UdpClient();
@@ -36,7 +44,15 @@ internal static class Program {
 
     }
 
+    static void AcceptTcpClients() {
 
+        while (true) {
+            Client newClient = new Client(listener.AcceptTcpClient());
+            SendClientOwnGuid(newClient);
+            clients.Add(newClient);
+            BroadcastConnection();
+        }
+    }
 
     static void BroadcastUdpPackets(object? sender, ElapsedEventArgs e) {
         byte[] broadCastMessage = Encoding.ASCII.GetBytes("Apple");
@@ -52,20 +68,11 @@ internal static class Program {
         return timer;
     }
 
-    static void AcceptTcpClients() {
-
-        while (true) {
-            Client newClient = new Client(listener.AcceptTcpClient());
-            SendClientOwnGuid(newClient);
-            clients.Add(newClient);
-            BroadcastConnection();
-        }
-    }
 
     static void SendClientOwnGuid(Client client) {
 
         var clientGuidPacket = new PacketBuilder();
-        clientGuidPacket.WriteOpCode(2);
+        clientGuidPacket.WriteOpCode(OpCode.Guid);
         clientGuidPacket.WriteMessage(client.Guid.ToString());
         client.TcpClient.Client.Send(clientGuidPacket.GetPacketBytes());
     }
@@ -75,7 +82,7 @@ internal static class Program {
         var receiverUser = clients.Where(x => x.Guid.ToString() == receiverGuid).First();
 
         var messagePacket = new PacketBuilder();
-        messagePacket.WriteOpCode(5);
+        messagePacket.WriteOpCode(OpCode.Message);
         messagePacket.WriteMessage(senderGuid);
         messagePacket.WriteMessage(message);
 
@@ -90,7 +97,7 @@ internal static class Program {
 
         for (int i = 0; i < clients.Count; i++) {
             var messagePacket = new PacketBuilder();
-            messagePacket.WriteOpCode(5);
+            messagePacket.WriteOpCode(OpCode.Message);
             messagePacket.WriteMessage(senderGuid);
             messagePacket.WriteMessage(message);
 
@@ -104,7 +111,7 @@ internal static class Program {
         foreach (var _client in clients) {
             foreach (var client in clients) {
                 PacketBuilder broadcastPacket = new PacketBuilder();
-                broadcastPacket.WriteOpCode(1);
+                broadcastPacket.WriteOpCode(OpCode.NewClientConnected);
                 broadcastPacket.WriteMessage(_client.Username);
                 broadcastPacket.WriteMessage(_client.Guid.ToString());
                 broadcastPacket.AddBytesToPacket(_client.ProfileImgData);
@@ -122,7 +129,7 @@ internal static class Program {
         foreach (var user in clients) {
 
             var broadcastPacket = new PacketBuilder();
-            broadcastPacket.WriteOpCode(10);
+            broadcastPacket.WriteOpCode(OpCode.ClientDisconnected);
             broadcastPacket.WriteMessage(guid);
             user.TcpClient.Client.Send(broadcastPacket.GetPacketBytes());
         }
@@ -132,7 +139,7 @@ internal static class Program {
         foreach (var user in clients) {
 
             var broadcastPacket = new PacketBuilder();
-            broadcastPacket.WriteOpCode(11);
+            broadcastPacket.WriteOpCode(OpCode.ServerShutdown);
             user.TcpClient.Client.Send(broadcastPacket.GetPacketBytes());
         }
     }
