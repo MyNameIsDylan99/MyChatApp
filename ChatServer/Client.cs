@@ -33,6 +33,7 @@ namespace ChatServer {
             var opcode = packetReader.ReadByte();
             Username = packetReader.ReadMessage();
             ProfileImgData = packetReader.ReadImage();
+            packetReader.Dispose();
             Console.WriteLine($"{DateTime.Now}: Client {Username} with guid: {Guid.ToString()} has connected.");
 
             Task.Run(Process);
@@ -49,6 +50,7 @@ namespace ChatServer {
                         case OpCode.Message:
                             var receiverGuid = packetReader.ReadMessage();
                             var msg = packetReader.ReadMessage();
+                            packetReader.Dispose();
                             var receiver = Program.clients.Where(x => x.Guid.ToString() == receiverGuid).FirstOrDefault();
                             Console.WriteLine($"{DateTime.Now} | {Username} sent: <<{msg}>> to {receiver.Username}");
                             Program.SendMessage(msg, Guid.ToString(),receiverGuid);

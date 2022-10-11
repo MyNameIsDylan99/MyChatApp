@@ -72,5 +72,8 @@ namespace ChatClient.Net.IO {
             //img.Save(imagePath, imgFormat);
             return imagePath;
         }
+        public void Dispose() {
+            _ns.Dispose();
+        }
     }
 }

@@ -100,7 +100,7 @@ namespace MyChatApp.MVVM.ViewModel {
             var username = Server.PacketReader.ReadMessage();
             var guid = Server.PacketReader.ReadMessage();
             var profilePictureImgSource = Server.PacketReader.ReadImage();
-
+            Server.PacketReader.Dispose();
             var connectedUser = new ContactModel(username, guid, profilePictureImgSource);
 
 
@@ -114,6 +114,7 @@ namespace MyChatApp.MVVM.ViewModel {
 
         void RemoveUser() {
             var uid = Server.PacketReader.ReadMessage();
+            Server.PacketReader.Dispose();
             var user = Contacts.Where(x => x.Guid == uid).FirstOrDefault();
             Application.Current.Dispatcher.Invoke(() => Contacts.Remove(user));
         }
@@ -121,6 +122,7 @@ namespace MyChatApp.MVVM.ViewModel {
         void MessageReceived() {
             var GUID = Server.PacketReader.ReadMessage();
             var msg = Server.PacketReader.ReadMessage();
+            Server.PacketReader.Dispose();
             var sender = Contacts.Where(x => x.Guid == GUID).FirstOrDefault();
 
             var msgModel = new MessageModel(sender.Username, msg, sender.ImageSource, DateTime.Now);
