@@ -42,30 +42,31 @@ namespace ChatClient.Net.IO {
             _ns.Read(imageBuffer, 0, imageByteLength);
             
             MemoryStream ms = new MemoryStream(imageBuffer);
-            var img = Image.FromStream(ms);
-            var imgFormatString = Encoding.ASCII.GetString(imageFormatBuffer);
-            var imgFormat = ImageFormat.Png;
-            switch (imgFormatString) {
-                case "png":
-                    imgFormat = ImageFormat.Png;
-                    break;
-                case "jpeg":
-                    imgFormat = ImageFormat.Jpeg;
-                    break;
-                case "gif":
-                    imgFormat = ImageFormat.Gif;
-                    break;
-                case "jpg":
-                    imgFormat = ImageFormat.Jpeg;
-                    break;
-
-            }
-
-            imagePath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\ProfilePictures\" + DateTime.Now.ToString().Replace(":", "_") + "." + imgFormatString;
-
-                img.Save(imagePath);
-
             
+            var imgFormatString = Encoding.ASCII.GetString(imageFormatBuffer);
+            using (var img = Image.FromStream(ms)){
+
+                var imgFormat = ImageFormat.Png;
+                switch (imgFormatString) {
+                    case "png":
+                        imgFormat = ImageFormat.Png;
+                        break;
+                    case "jpeg":
+                        imgFormat = ImageFormat.Jpeg;
+                        break;
+                    case "gif":
+                        imgFormat = ImageFormat.Gif;
+                        break;
+                    case "jpg":
+                        imgFormat = ImageFormat.Jpeg;
+                        break;
+
+                }
+
+                imagePath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\ProfilePictures\" + DateTime.Now.ToString().Replace(":", "_");
+
+                img.Save(imagePath,imgFormat);
+            }
 
             return imagePath;
         }
