@@ -1,6 +1,7 @@
 ﻿using ChatServer;
 using ChatServer.Net.IO;
 using System;
+using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -11,7 +12,7 @@ using System.Timers;
 
 internal static class Program {
 
-    public static List<Client> clients = new List<Client>();
+    public static ConcurrentBag<Client> clients = new ConcurrentBag<Client>();
 
     static TcpListener listener;
 
@@ -101,7 +102,7 @@ internal static class Program {
             messagePacket.WriteMessage(senderGuid);
             messagePacket.WriteMessage(message);
 
-            clients[i].TcpClient.Client.Send(messagePacket.GetPacketBytes());
+            clients.ElementAt(i).TcpClient.Client.Send(messagePacket.GetPacketBytes());
         }
 
 
@@ -146,7 +147,7 @@ internal static class Program {
 
     static Client RemoveDisconnectedUser(string guid) {
         var disconnectedUser = clients.Where(x => x.Guid.ToString() == guid).FirstOrDefault();
-        clients.Remove(disconnectedUser);
+        clients.TryTake(out disconnectedUser);
         return disconnectedUser;
     }
     static string GetLocalIPv4(NetworkInterfaceType _type) {
