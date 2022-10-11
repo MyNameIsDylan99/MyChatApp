@@ -31,7 +31,7 @@ namespace ChatClient.Net.IO {
         public void WriteImage(string imgSource) {
             byte[] imgData = System.IO.File.ReadAllBytes(imgSource);
             var imgByteLength = imgData.Length;
-            var imgTypeAsString = imgSource.Substring(imgSource.IndexOf('.') + 1);
+            var imgTypeAsString = imgSource.Substring(imgSource.LastIndexOf('.') + 1);
             var imgTypeAsStringLength = imgTypeAsString.Length;
 
 

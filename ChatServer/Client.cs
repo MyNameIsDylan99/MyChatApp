@@ -22,6 +22,8 @@ namespace ChatServer {
 
         public Client(TcpClient tcpClient) { 
             this.TcpClient = tcpClient;
+            tcpClient.ReceiveBufferSize = 16384000;
+            tcpClient.SendBufferSize = 16384000;
             Guid = Guid.NewGuid();
             packetReader = new PacketReader(TcpClient.GetStream());
 

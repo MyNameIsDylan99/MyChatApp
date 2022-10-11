@@ -45,8 +45,20 @@ namespace MyChatApp.MVVM.View {
         }
 
             private void ButtonLogin_Click(object sender, RoutedEventArgs e) {
+
             this.ServerOfflineErrorMessage.Visibility = Visibility.Hidden;
             this.UsernameEmpyErrorMessage.Visibility = Visibility.Hidden;
+            MainWindow mainWindow = new MainWindow();
+            MainViewModel mvm = (MainViewModel)mainWindow.DataContext;
+
+            if (!string.IsNullOrEmpty(loginViewModel.Username)) {
+
+                mvm.GetDataFromLoginViewModel(loginViewModel.Username, loginViewModel.ProfilePictureSource, loginViewModel.Server); }
+
+            else {
+                this.UsernameEmpyErrorMessage.Visibility = Visibility.Visible;
+            }
+
             try {
                 loginViewModel.ConnectToServerCommand.Execute(this);
             }
@@ -55,17 +67,10 @@ namespace MyChatApp.MVVM.View {
                 return;
             }
 
-            if (!string.IsNullOrEmpty(loginViewModel.Username)) {
-                MainWindow mainWindow = new MainWindow();
-               MainViewModel mvm =  (MainViewModel)mainWindow.DataContext;
-                mvm.GetDataFromLoginViewModel(loginViewModel.Username, loginViewModel.ProfilePictureSource, loginViewModel.Server);
-                mainWindow.Show();
-                Application.Current.MainWindow = mainWindow;
-                this.Close();
-            }
-            else {
-                this.UsernameEmpyErrorMessage.Visibility = Visibility.Visible;
-            }
+            mainWindow.Show();
+            Application.Current.MainWindow = mainWindow;
+            this.Close();
+
         }
     }
 }

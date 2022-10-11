@@ -43,8 +43,9 @@ namespace ChatClient.Net.IO {
             
             MemoryStream ms = new MemoryStream(imageBuffer);
             var img = Image.FromStream(ms);
+            var imgFormatString = Encoding.ASCII.GetString(imageFormatBuffer);
             var imgFormat = ImageFormat.Png;
-            switch (Encoding.ASCII.GetString(imageFormatBuffer)) {
+            switch (imgFormatString) {
                 case "png":
                     imgFormat = ImageFormat.Png;
                     break;
@@ -60,7 +61,7 @@ namespace ChatClient.Net.IO {
 
             }
 
-            imagePath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/ProfilePictures/" + DateTime.Now.ToString();
+            imagePath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\ProfilePictures\" + DateTime.Now.ToString().Replace(":", "_") + "." + imgFormatString;
             img.Save(imagePath, imgFormat);
 
             return imagePath;

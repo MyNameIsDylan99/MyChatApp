@@ -66,7 +66,7 @@ internal static class Program {
 
         var clientGuidPacket = new PacketBuilder();
         clientGuidPacket.WriteOpCode(2);
-        clientGuidPacket.WriteMessage(client.Guid.ToString()); ;
+        clientGuidPacket.WriteMessage(client.Guid.ToString());
         client.TcpClient.Client.Send(clientGuidPacket.GetPacketBytes());
     }
 

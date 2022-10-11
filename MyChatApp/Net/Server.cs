@@ -40,6 +40,8 @@ namespace ChatClient.Net {
         public Server() {
 
             tcpClient = new TcpClient();
+            tcpClient.ReceiveBufferSize = 16384000;
+            tcpClient.SendBufferSize = 16384000;
             udpClient.EnableBroadcast = true;
 
         }
