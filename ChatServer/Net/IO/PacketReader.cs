@@ -41,9 +41,6 @@ namespace ChatServer.Net.IO {
             return ms.ToArray();
         }
 
-        public void Dispose() {
-            _ns.Dispose();
-        }
 
     }
 }

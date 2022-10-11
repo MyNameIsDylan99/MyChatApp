@@ -33,7 +33,6 @@ namespace ChatServer {
             var opcode = packetReader.ReadByte();
             Username = packetReader.ReadMessage();
             ProfileImgData = packetReader.ReadImage();
-            packetReader.Dispose();
             Console.WriteLine($"{DateTime.Now}: Client {Username} with guid: {Guid.ToString()} has connected.");
 
             Task.Run(Process);
