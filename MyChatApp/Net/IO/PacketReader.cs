@@ -44,7 +44,6 @@ namespace ChatClient.Net.IO {
                 bytesRead = _ns.Read(imageBuffer, 0, imageByteLength);
             }
             while (_ns.DataAvailable && bytesRead >= imageByteLength);
-
             //MemoryStream ms = new MemoryStream(imageBuffer);
 
             var imgFormatString = Encoding.ASCII.GetString(imageFormatBuffer);
@@ -68,10 +67,22 @@ namespace ChatClient.Net.IO {
             //}
 
             imagePath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\ProfilePictures\" + DateTime.Now.ToString().Replace(":", "_") + "." + imgFormatString;
+            bool fileCreatedSuccessfully = false;
+            while (!fileCreatedSuccessfully) { 
+            try {
+                using (BinaryWriter bWriter = new BinaryWriter(File.Open(imagePath, FileMode.Create))) {
 
-            BinaryWriter bWriter = new BinaryWriter(File.Open(imagePath, FileMode.Create));
-            bWriter.Write(imageBuffer);
-            bWriter.Close();
+                    bWriter.Write(imageBuffer);
+                        fileCreatedSuccessfully = true;
+                }
+            }
+            catch (Exception) {
+
+                
+            }
+            }
+
+
 
             //img.Save(imagePath, imgFormat);
             return imagePath;
