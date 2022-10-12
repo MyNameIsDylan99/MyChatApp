@@ -48,12 +48,11 @@ namespace ChatClient.Net.IO {
             var imgFormatString = Encoding.ASCII.GetString(imageFormatBuffer);
 
             imagePath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\ProfilePictures\" + DateTime.Now.Ticks.ToString().Replace(":", "_") + pictureCount.ToString() + "." + imgFormatString;
-            
 
-            using (FileStream stream = File.Open(imagePath, FileMode.Create)) {
 
-                BinaryWriter bWriter = new BinaryWriter(stream);
-                bWriter.Write(imageBuffer);
+            using (MemoryStream stream = new MemoryStream(imageBuffer)) {
+
+                Image.FromStream(stream).Save(imagePath);
 
             }
 
