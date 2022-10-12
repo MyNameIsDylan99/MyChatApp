@@ -12,6 +12,7 @@ namespace ChatServer.Net.IO {
 
         public PacketBuilder() {
             _ms = new MemoryStream();
+            _ms.Capacity = 5000000;
         }
 
         public void WriteOpCode(OpCode opCode) {

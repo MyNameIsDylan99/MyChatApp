@@ -96,7 +96,9 @@ namespace ChatClient.Net {
                     connectPacket.WriteOpCode(0);
                     connectPacket.WriteMessage(username);
                     connectPacket.WriteImage(profilePictureSource);
-                    tcpClient.Client.Send(connectPacket.GetPacketBytes());
+                    NetworkStream ns = tcpClient.GetStream();
+                    ns.Write(connectPacket.GetPacketBytes());
+                    //tcpClient.Client.Send(connectPacket.GetPacketBytes());
                 }
 
                 ReadPackets();
