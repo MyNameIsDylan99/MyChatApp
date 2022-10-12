@@ -49,7 +49,6 @@ namespace ChatServer {
                         case OpCode.Message:
                             var receiverGuid = packetReader.ReadMessage();
                             var msg = packetReader.ReadMessage();
-                            packetReader.Dispose();
                             var receiver = Program.clients.Where(x => x.Guid.ToString() == receiverGuid).FirstOrDefault();
                             Console.WriteLine($"{DateTime.Now} | {Username} sent: <<{msg}>> to {receiver.Username}");
                             Program.SendMessage(msg, Guid.ToString(),receiverGuid);

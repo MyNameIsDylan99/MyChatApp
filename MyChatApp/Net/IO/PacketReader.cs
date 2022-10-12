@@ -40,21 +40,23 @@ namespace ChatClient.Net.IO {
             var imageByteLength = ReadInt32();
             byte[] imageBuffer = new byte[imageByteLength];
             var bytesRead = 0;
-            while (bytesRead < imageByteLength)
-            {
+            while (bytesRead < imageByteLength) {
                 bytesRead += _ns.Read(imageBuffer, 0, imageByteLength);
             }
-            
+
 
             var imgFormatString = Encoding.ASCII.GetString(imageFormatBuffer);
-            
-            imagePath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\ProfilePictures\" + DateTime.Now.ToString().Replace(":", "_") + "." + imgFormatString;
+
+            imagePath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\ProfilePictures\" + DateTime.Now.Ticks.ToString().Replace(":", "_") + "." + imgFormatString;
+
 
             using (FileStream stream = File.Open(imagePath, FileMode.Create)) {
 
                 BinaryWriter bWriter = new BinaryWriter(stream);
                 bWriter.Write(imageBuffer);
+
             }
+
 
             return imagePath;
         }
