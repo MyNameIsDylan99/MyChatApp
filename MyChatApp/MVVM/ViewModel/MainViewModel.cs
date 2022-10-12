@@ -99,16 +99,18 @@ namespace MyChatApp.MVVM.ViewModel {
 
             var username = Server.PacketReader.ReadMessage();
             var guid = Server.PacketReader.ReadMessage();
-            var profilePictureImgSource = Server.PacketReader.ReadImage();
-            var connectedUser = new ContactModel(username, guid, profilePictureImgSource);
+            bool userAlreadyExists = Contacts.Any(x => x.Guid.ToString() == guid) || guid == Server.Guid.ToString();
 
-
-            if (!Contacts.Any(x => x.Guid == connectedUser.Guid) && connectedUser.Guid != Server.Guid) {
+            if (!userAlreadyExists) {
+                var profilePictureImgSource = Server.PacketReader.ReadAndSaveImage();
+                var connectedUser = new ContactModel(username, guid, profilePictureImgSource);
                 Application.Current.Dispatcher.Invoke(() => Contacts.Add(connectedUser));
                 connectedUser.Messages.Add(new MessageModel(connectedUser.Username, "I just connected :)", connectedUser.ImageSource, DateTime.Now));
                 connectedUser.LastMessage = connectedUser.Messages.Last().Message;
             }
-
+            else {
+                Server.PacketReader.ReadImageAndDoNothingWithIt();
+            }
         }
 
         void RemoveUser() {

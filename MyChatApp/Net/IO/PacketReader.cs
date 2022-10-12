@@ -30,7 +30,7 @@ namespace ChatClient.Net.IO {
             return msg;
         }
 
-        public string ReadImage() {
+        public string ReadAndSaveImage() {
             string imagePath = "";
 
 
@@ -59,6 +59,19 @@ namespace ChatClient.Net.IO {
             pictureCount++;
 
             return imagePath;
+        }
+
+        public void ReadImageAndDoNothingWithIt() {
+
+            var length = ReadInt32();
+            byte[] imageFormatBuffer = new byte[length];
+            _ns.Read(imageFormatBuffer, 0, length);
+            var imageByteLength = ReadInt32();
+            byte[] imageBuffer = new byte[imageByteLength];
+            var bytesRead = 0;
+            while (bytesRead < imageByteLength) {
+                bytesRead += _ns.Read(imageBuffer, 0, imageByteLength);
+            }
         }
 
     }

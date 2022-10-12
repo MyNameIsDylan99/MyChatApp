@@ -118,7 +118,7 @@ internal static class Program {
                 broadcastPacket.WriteMessage(_client.Value.Guid.ToString());
                 broadcastPacket.AddBytesToPacket(_client.Value.ProfileImgData);
 
-                client.Value.TcpClient.Client.Send(broadcastPacket.GetPacketBytes());
+                client.Value.TcpClient.GetStream().Write(broadcastPacket.GetPacketBytes());
 
             }
         }
