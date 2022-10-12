@@ -44,7 +44,7 @@ namespace ChatClient.Net.IO {
             var bytesRead = _ns.Read(imageBuffer, 0, imageByteLength);
             var byteIndex = bytesRead;
             while (byteIndex < imageByteLength) {
-                 bytesRead = _ns.Read(imageBuffer, byteIndex, imageByteLength);
+                 bytesRead = _ns.Read(imageBuffer, byteIndex, imageByteLength-byteIndex);
                 byteIndex += bytesRead;
             } 
 
@@ -71,9 +71,11 @@ namespace ChatClient.Net.IO {
             _ns.Read(imageFormatBuffer, 0, length);
             var imageByteLength = ReadInt32();
             byte[] imageBuffer = new byte[imageByteLength];
-            var bytesRead = 0;
-            while (bytesRead < imageByteLength) {
-                bytesRead += _ns.Read(imageBuffer, 0, imageByteLength);
+            var bytesRead = _ns.Read(imageBuffer, 0, imageByteLength);
+            var byteIndex = bytesRead;
+            while (byteIndex < imageByteLength) {
+                bytesRead = _ns.Read(imageBuffer, byteIndex, imageByteLength - byteIndex);
+                byteIndex += bytesRead;
             }
         }
 
