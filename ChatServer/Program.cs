@@ -12,7 +12,7 @@ using System.Timers;
 
 internal static class Program {
 
-    public static ConcurrentBag<Client> clients = new ConcurrentBag<Client>();
+    public static ConcurrentDictionary<string,Client> clients = new ConcurrentDictionary<string,Client>();
 
     static TcpListener listener;
 
@@ -50,7 +50,7 @@ internal static class Program {
         while (true) {
             Client newClient = new Client(listener.AcceptTcpClient());
             SendClientOwnGuid(newClient);
-            clients.Add(newClient);
+            clients.TryAdd(newClient.Guid.ToString(),newClient);
             BroadcastConnection();
         }
     }
@@ -80,7 +80,7 @@ internal static class Program {
 
     public static void SendMessage(string message, string senderGuid, string receiverGuid) {
 
-        var receiverUser = clients.Where(x => x.Guid.ToString() == receiverGuid).First();
+        var receiverUser = clients[receiverGuid];
 
         var messagePacket = new PacketBuilder();
         messagePacket.WriteOpCode(OpCode.Message);
@@ -96,13 +96,14 @@ internal static class Program {
 
     public static void BroadcastMessage(string message, string senderGuid) {
 
-        for (int i = 0; i < clients.Count; i++) {
+        foreach(var entry in clients) {
+
             var messagePacket = new PacketBuilder();
             messagePacket.WriteOpCode(OpCode.Message);
             messagePacket.WriteMessage(senderGuid);
             messagePacket.WriteMessage(message);
 
-            clients.ElementAt(i).TcpClient.Client.Send(messagePacket.GetPacketBytes());
+            entry.Value.TcpClient.Client.Send(messagePacket.GetPacketBytes());
         }
 
 
@@ -113,11 +114,11 @@ internal static class Program {
             foreach (var client in clients) {
                 PacketBuilder broadcastPacket = new PacketBuilder();
                 broadcastPacket.WriteOpCode(OpCode.NewClientConnected);
-                broadcastPacket.WriteMessage(_client.Username);
-                broadcastPacket.WriteMessage(_client.Guid.ToString());
-                broadcastPacket.AddBytesToPacket(_client.ProfileImgData);
+                broadcastPacket.WriteMessage(_client.Value.Username);
+                broadcastPacket.WriteMessage(_client.Value.Guid.ToString());
+                broadcastPacket.AddBytesToPacket(_client.Value.ProfileImgData);
 
-                client.TcpClient.Client.Send(broadcastPacket.GetPacketBytes());
+                client.Value.TcpClient.Client.Send(broadcastPacket.GetPacketBytes());
 
             }
         }
@@ -132,7 +133,7 @@ internal static class Program {
             var broadcastPacket = new PacketBuilder();
             broadcastPacket.WriteOpCode(OpCode.ClientDisconnected);
             broadcastPacket.WriteMessage(guid);
-            user.TcpClient.Client.Send(broadcastPacket.GetPacketBytes());
+            user.Value.TcpClient.Client.Send(broadcastPacket.GetPacketBytes());
         }
     }
 
@@ -141,13 +142,17 @@ internal static class Program {
 
             var broadcastPacket = new PacketBuilder();
             broadcastPacket.WriteOpCode(OpCode.ServerShutdown);
-            user.TcpClient.Client.Send(broadcastPacket.GetPacketBytes());
+            user.Value.TcpClient.Client.Send(broadcastPacket.GetPacketBytes());
         }
     }
 
     static Client RemoveDisconnectedUser(string guid) {
-        var disconnectedUser = clients.Where(x => x.Guid.ToString() == guid).FirstOrDefault();
-        clients.TryTake(out disconnectedUser);
+        Client disconnectedUser = null;
+        bool removedDisconnectedUser = false;
+        while (!removedDisconnectedUser) {
+            removedDisconnectedUser = clients.TryRemove(guid,out disconnectedUser); //TODO: FUCK CONCURRENTBAG
+        }
+        
         return disconnectedUser;
     }
     static string GetLocalIPv4(NetworkInterfaceType _type) {

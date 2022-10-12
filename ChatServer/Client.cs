@@ -49,7 +49,7 @@ namespace ChatServer {
                         case OpCode.Message:
                             var receiverGuid = packetReader.ReadMessage();
                             var msg = packetReader.ReadMessage();
-                            var receiver = Program.clients.Where(x => x.Guid.ToString() == receiverGuid).FirstOrDefault();
+                            var receiver = Program.clients[receiverGuid];
                             Console.WriteLine($"{DateTime.Now} | {Username} sent: <<{msg}>> to {receiver.Username}");
                             Program.SendMessage(msg, Guid.ToString(),receiverGuid);
                             break;
