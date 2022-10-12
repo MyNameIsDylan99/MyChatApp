@@ -33,7 +33,7 @@ namespace ChatClient.Net.IO {
         public string ReadImage() {
             string imagePath = "";
 
-
+            
             var length = ReadInt32();
             byte[] imageFormatBuffer = new byte[length];
             _ns.Read(imageFormatBuffer, 0, length);
@@ -78,7 +78,7 @@ namespace ChatClient.Net.IO {
             }
             catch (Exception) {
 
-                
+                    fileCreatedSuccessfully = false;
             }
             }
 
