@@ -33,58 +33,29 @@ namespace ChatClient.Net.IO {
         public string ReadImage() {
             string imagePath = "";
 
-            
+
             var length = ReadInt32();
             byte[] imageFormatBuffer = new byte[length];
             _ns.Read(imageFormatBuffer, 0, length);
             var imageByteLength = ReadInt32();
             byte[] imageBuffer = new byte[imageByteLength];
             var bytesRead = 0;
-            do  {
-                bytesRead = _ns.Read(imageBuffer, 0, imageByteLength);
+            while (bytesRead < imageByteLength)
+            {
+                bytesRead += _ns.Read(imageBuffer, 0, imageByteLength);
             }
-            while (_ns.DataAvailable && bytesRead >= imageByteLength);
-            //MemoryStream ms = new MemoryStream(imageBuffer);
+            
 
             var imgFormatString = Encoding.ASCII.GetString(imageFormatBuffer);
-            //var img = Image.FromStream(ms);
-
-            //var imgFormat = ImageFormat.Png;
-            //switch (imgFormatString) {
-            //    case "png":
-            //        imgFormat = ImageFormat.Png;
-            //        break;
-            //    case "jpeg":
-            //        imgFormat = ImageFormat.Jpeg;
-            //        break;
-            //    case "gif":
-            //        imgFormat = ImageFormat.Gif;
-            //        break;
-            //    case "jpg":
-            //        imgFormat = ImageFormat.Jpeg;
-            //        break;
-
-            //}
-
+            
             imagePath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\ProfilePictures\" + DateTime.Now.ToString().Replace(":", "_") + "." + imgFormatString;
-            bool fileCreatedSuccessfully = false;
-            while (!fileCreatedSuccessfully) { 
-            try {
-                using (BinaryWriter bWriter = new BinaryWriter(File.Open(imagePath, FileMode.Create))) {
 
-                    bWriter.Write(imageBuffer);
-                        fileCreatedSuccessfully = true;
-                }
-            }
-            catch (Exception) {
+            using (FileStream stream = File.Open(imagePath, FileMode.Create)) {
 
-                    fileCreatedSuccessfully = false;
-            }
+                BinaryWriter bWriter = new BinaryWriter(stream);
+                bWriter.Write(imageBuffer);
             }
 
-
-
-            //img.Save(imagePath, imgFormat);
             return imagePath;
         }
 

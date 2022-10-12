@@ -33,10 +33,11 @@ namespace ChatServer.Net.IO {
                 var imageByteLength = ReadInt32();
                 byte[] imageBuffer = new byte[imageByteLength];
                 var bytesRead = 0;
-                do {
-                    bytesRead = _ns.Read(imageBuffer, 0, imageByteLength);
+
+                while (bytesRead < imageByteLength) {
+                    bytesRead += _ns.Read(imageBuffer, 0, imageByteLength);
                 }
-                while (_ns.DataAvailable && bytesRead >= imageByteLength);
+
 
                 ms.Write(BitConverter.GetBytes(length));
                 ms.Write(imageFormatBuffer);
