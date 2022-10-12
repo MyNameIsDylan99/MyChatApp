@@ -13,7 +13,7 @@ namespace ChatClient.Net.IO {
     internal class PacketReader : BinaryReader {
 
         NetworkStream _ns;
-
+        int pictureCount = 0;
         public PacketReader(NetworkStream ns) : base(ns) {
             _ns = ns;
         }
@@ -47,8 +47,8 @@ namespace ChatClient.Net.IO {
 
             var imgFormatString = Encoding.ASCII.GetString(imageFormatBuffer);
 
-            imagePath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\ProfilePictures\" + DateTime.Now.Ticks.ToString().Replace(":", "_") + "." + imgFormatString;
-
+            imagePath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\ProfilePictures\" + DateTime.Now.Ticks.ToString().Replace(":", "_") + pictureCount.ToString() + "." + imgFormatString;
+            
 
             using (FileStream stream = File.Open(imagePath, FileMode.Create)) {
 
@@ -57,6 +57,7 @@ namespace ChatClient.Net.IO {
 
             }
 
+            pictureCount++;
 
             return imagePath;
         }
