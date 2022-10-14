@@ -1,6 +1,4 @@
-﻿using ChatClient.Net;
-using MyChatApp.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -8,22 +6,24 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using static MyChatApp.MVVM.ViewModel.MainViewModel;
 
-namespace MyChatApp.MVVM.ViewModel {
+public enum ConnectionMethods {
+    Localhost,
+    SearchInLan
+}
+namespace MyChatApp {
+
     internal class LoginViewModel : ObservableObject {
 
-        public string Username {get; set;}
+        public string Username { get; set; }
 
 
         string profilePictureSource = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\ProfilePictures/DefaultProfilePicture.png";
         public string ProfilePictureSource {
             get { return profilePictureSource; }
             set {
-                profilePictureSource=value;
+                profilePictureSource = value;
                 OnPropertyChanged();
             }
         }
@@ -48,11 +48,6 @@ namespace MyChatApp.MVVM.ViewModel {
             }
         }
 
-        public enum ConnectionMethods {
-            Localhost,
-            SearchInLan
-        }
-
         private ConnectionMethods connectionMethod = ConnectionMethods.Localhost;
         public ConnectionMethods ConnectionMethod {
 
@@ -74,7 +69,7 @@ namespace MyChatApp.MVVM.ViewModel {
             Server.FoundServerInSubnetEvent += OnFoundServerInSubnetEvent;
             LookForServerInLan();
             ConnectToServerCommand = new RelayCommand(ConnectToServer, o => !string.IsNullOrEmpty(Username));
-            ChangeProfilePictureCommand = new RelayCommand(ChooseProfilePicture);
+            ChangeProfilePictureCommand = new RelayCommand(ChangeProfilePicture);
         }
 
         void ConnectToServer(object o) {
@@ -106,32 +101,25 @@ namespace MyChatApp.MVVM.ViewModel {
             return output;
         }
 
-        private void ChooseProfilePicture(object sender) {
+        private void ChangeProfilePicture(object sender) {
 
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            string sourceFile = Utility.ChoosePicture();
+            string onlyFileName = sourceFile.Substring(sourceFile.LastIndexOf(@"\") + 1);
 
-            dlg.DefaultExt = ".png";
-            dlg.Filter = "JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif";
-
-
-            Nullable<bool> result = dlg.ShowDialog();
-
-            if (result == true) {
-                // Open document 
-                string sourceFile = dlg.FileName;
-                string destinationFile = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/ProfilePictures/" + dlg.SafeFileName;
-                try {
-                    File.Copy(sourceFile, destinationFile, true);
-                }
-                catch (Exception) {
-
-                }
-                finally {
-                    ProfilePictureSource = destinationFile;
-                }
+            string destinationFile = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/ProfilePictures/" + onlyFileName;
+            try {
+                File.Copy(sourceFile, destinationFile, true);
+            }
+            catch (Exception) {
 
             }
-
+            finally {
+                ProfilePictureSource = destinationFile;
+            }
         }
     }
+
+
 }
+
+

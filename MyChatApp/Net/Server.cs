@@ -1,22 +1,20 @@
-﻿using ChatClient.Net.IO;
+﻿using MyChatApp;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
-using System.Windows;
-using System.Windows.Documents;
-using System.Windows.Markup;
-using static MyChatApp.MVVM.ViewModel.LoginViewModel;
 
-namespace ChatClient.Net {
-    internal class Server {
+public enum OpCode : byte {
+    NewClientConnected = 1,
+    Guid = 2,
+    Message = 5,
+    Picture = 6,
+    ClientDisconnected = 10,
+    ServerShutdown = 11
+}
+namespace MyChatApp { 
+internal class Server {
 
         public PacketReader PacketReader;
 
@@ -34,16 +32,9 @@ namespace ChatClient.Net {
         public event Action ConnectedEvent;
         public event Action UserDisconnectedEvent;
         public event Action MessageReceivedEvent;
+        public event Action PictureReceivedEvent;
         public event Action ServerShutdownEvent;
         public event Action<string> FoundServerInSubnetEvent;
-
-        public enum OpCode : byte {
-            NewClientConnected = 1,
-            Guid = 2,
-            Message = 5,
-            ClientDisconnected = 10,
-            ServerShutdown = 11
-        }
 
         public Server() {
 
@@ -125,6 +116,9 @@ namespace ChatClient.Net {
                         case OpCode.Message:
                             MessageReceivedEvent?.Invoke();
                             break;
+                        case OpCode.Picture:
+                            PictureReceivedEvent?.Invoke();
+                            break;
                         case OpCode.ClientDisconnected:
                             UserDisconnectedEvent?.Invoke();
                             break;
@@ -140,11 +134,19 @@ namespace ChatClient.Net {
             });
         }
 
-        public void SendMessageToServer(string message, string receiverGuid) {
+        public void SendMessage(string message, string receiverGuid) {
             var messagePacket = new PacketBuilder();
             messagePacket.WriteOpCode(OpCode.Message);
             messagePacket.WriteMessage(receiverGuid);
             messagePacket.WriteMessage(message);
+            tcpClient.Client.Send(messagePacket.GetPacketBytes());
+        }
+
+        public void SendPicture(string picture, string receiverGuid) {
+            var messagePacket = new PacketBuilder();
+            messagePacket.WriteOpCode(OpCode.Picture);
+            messagePacket.WriteMessage(receiverGuid);
+            messagePacket.WriteImage(picture);
             tcpClient.Client.Send(messagePacket.GetPacketBytes());
         }
 
@@ -158,6 +160,5 @@ namespace ChatClient.Net {
             throw new Exception("No network adapters with an IPv4 address in the system!");
         }
 
-    }
 }
-
+}

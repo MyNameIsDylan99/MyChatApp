@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="ChatImages\DefaultProfilePicture.png" />
     <None Remove="Icons\black-circle.png" />
     <None Remove="Icons\phone-call.png" />
     <None Remove="Icons\plus.png" />
@@ -17,6 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="ChatImages\DefaultProfilePicture.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Icons\phone-call.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:MyChatApp.MVVM.View"
         mc:Ignorable="d"
         Title="LoginWindow"
-        xmlns:viewmodel="clr-namespace:MyChatApp.MVVM.ViewModel"
+        xmlns:viewmodel="clr-namespace:MyChatApp"
         Background="#4b6043"
         Width="500"
         Height="300"

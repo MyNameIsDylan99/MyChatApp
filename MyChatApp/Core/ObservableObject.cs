@@ -6,8 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyChatApp.Core {
-    internal class ObservableObject : INotifyPropertyChanged {
+    internal abstract class ObservableObject : INotifyPropertyChanged {
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -15,4 +14,3 @@ namespace MyChatApp.Core {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
-}

@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace ChatClient.Net.IO {
+namespace MyChatApp {
     internal class PacketReader : BinaryReader {
 
         NetworkStream _ns;
@@ -30,7 +26,7 @@ namespace ChatClient.Net.IO {
             return msg;
         }
 
-        public string ReadAndSaveImage() {
+        public string ReadAndSaveImage(string path) {
             string imagePath = "";
 
 
@@ -44,13 +40,13 @@ namespace ChatClient.Net.IO {
             var bytesRead = _ns.Read(imageBuffer, 0, imageByteLength);
             var byteIndex = bytesRead;
             while (byteIndex < imageByteLength) {
-                 bytesRead = _ns.Read(imageBuffer, byteIndex, imageByteLength-byteIndex);
+                bytesRead = _ns.Read(imageBuffer, byteIndex, imageByteLength - byteIndex);
                 byteIndex += bytesRead;
-            } 
+            }
 
             var imgFormatString = Encoding.ASCII.GetString(imageFormatBuffer);
 
-            imagePath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\ProfilePictures\" + DateTime.Now.Ticks.ToString().Replace(":", "_") + pictureCount.ToString() + "." + imgFormatString;
+            imagePath = path + DateTime.Now.Ticks.ToString().Replace(":", "_") + pictureCount.ToString() + "." + imgFormatString;
 
 
             using (MemoryStream stream = new MemoryStream(imageBuffer)) {
@@ -64,7 +60,7 @@ namespace ChatClient.Net.IO {
             return imagePath;
         }
 
-        public void ReadImageAndDoNothingWithIt() {
+        public byte[] ReadImage() {
 
             var length = ReadInt32();
             byte[] imageFormatBuffer = new byte[length];
@@ -77,6 +73,7 @@ namespace ChatClient.Net.IO {
                 bytesRead = _ns.Read(imageBuffer, byteIndex, imageByteLength - byteIndex);
                 byteIndex += bytesRead;
             }
+            return imageBuffer;
         }
 
     }

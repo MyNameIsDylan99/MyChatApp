@@ -1,22 +1,16 @@
-﻿using MyChatApp.Core;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 
-namespace ModernChat.MVVM.Model {
+namespace MyChatApp {
     internal class ContactModel : ObservableObject {
         public string Username { get; set; }
         public string ImageSource { get; set; }
 
-        public ObservableCollection<MessageModel> Messages {
+        public ObservableCollection<SendableObject> Messages {
             get { return messages; }
             set { messages = value; }
         }
 
-        ObservableCollection<MessageModel> messages = new ObservableCollection<MessageModel>();
+        ObservableCollection<SendableObject> messages = new ObservableCollection<SendableObject>();
 
         string lastMessage;
         public string LastMessage { get { return lastMessage; } set { lastMessage = value; OnPropertyChanged(); } }
@@ -27,8 +21,7 @@ namespace ModernChat.MVVM.Model {
         public ContactModel(string username, string guid, string imageSource) {
             Username = username;
             ImageSource = imageSource;
-            this.Guid = guid;
+            Guid = guid;
         }
     }
-
 }

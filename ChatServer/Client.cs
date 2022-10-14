@@ -47,11 +47,10 @@ namespace ChatServer {
                     var opCodeAsEnum = (OpCode)opcode;
                     switch (opCodeAsEnum) {
                         case OpCode.Message:
-                            var receiverGuid = packetReader.ReadMessage();
-                            var msg = packetReader.ReadMessage();
-                            var receiver = Program.clients[receiverGuid];
-                            Console.WriteLine($"{DateTime.Now} | {Username} sent: <<{msg}>> to {receiver.Username}");
-                            Program.SendMessage(msg, Guid.ToString(),receiverGuid);
+                            OnMessageReceived();
+                            break;
+                        case OpCode.Picture:
+                            OnPictureReceived();
                             break;
                         default:
                             break;
@@ -64,6 +63,44 @@ namespace ChatServer {
                     break;
                 }
             }
+        }
+
+        private void OnMessageReceived() {
+            var receiverGuid = packetReader.ReadMessage();
+            var msg = packetReader.ReadMessage();
+            var receiver = Program.clients[receiverGuid];
+            Console.WriteLine($"{DateTime.Now} | {Username} sent: <<{msg}>> to {receiver.Username}");
+            SendMessage(msg, Guid.ToString(), receiver);
+        }
+          void SendMessage(string message, string senderGuid, Client receiver) {
+
+            var messagePacket = new PacketBuilder();
+            messagePacket.WriteOpCode(OpCode.Message);
+            messagePacket.WriteMessage(senderGuid);
+            messagePacket.WriteMessage(message);
+
+            receiver.TcpClient.Client.Send(messagePacket.GetPacketBytes());
+
+
+        }
+
+        private void OnPictureReceived() {
+            var receiverGuid = packetReader.ReadMessage();
+            var img = packetReader.ReadImage();
+            var receiver = Program.clients[receiverGuid];
+            Console.WriteLine($"{DateTime.Now} | {Username} sent: <<A picture containing {img.Length} bytes>> to {receiver.Username}");
+            SendImage(img, Guid.ToString(), receiver);
+        }
+        void SendImage(byte[] image, string senderGuid, Client receiver) {
+
+            var messagePacket = new PacketBuilder();
+            messagePacket.WriteOpCode(OpCode.Picture);
+            messagePacket.WriteMessage(receiver.Guid.ToString());
+            messagePacket.AddBytesToPacket(image);
+
+            receiver.TcpClient.Client.Send(messagePacket.GetPacketBytes());
+
+
         }
 
     }

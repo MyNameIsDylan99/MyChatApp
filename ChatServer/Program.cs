@@ -28,6 +28,7 @@ internal static class Program {
         NewClientConnected = 1,
         Guid = 2,
         Message = 5,
+        Picture=6,
         ClientDisconnected = 10,
         ServerShutdown = 11
     }
@@ -78,19 +79,7 @@ internal static class Program {
         client.TcpClient.Client.Send(clientGuidPacket.GetPacketBytes());
     }
 
-    public static void SendMessage(string message, string senderGuid, string receiverGuid) {
 
-        var receiverUser = clients[receiverGuid];
-
-        var messagePacket = new PacketBuilder();
-        messagePacket.WriteOpCode(OpCode.Message);
-        messagePacket.WriteMessage(senderGuid);
-        messagePacket.WriteMessage(message);
-
-        receiverUser.TcpClient.Client.Send(messagePacket.GetPacketBytes());
-
-
-    }
 
 
 

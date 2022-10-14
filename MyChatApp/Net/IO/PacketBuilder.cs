@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Interop;
-using static ChatClient.Net.Server;
 
-namespace ChatClient.Net.IO {
+namespace MyChatApp {
     internal class PacketBuilder {
 
         MemoryStream _ms;
@@ -31,7 +24,7 @@ namespace ChatClient.Net.IO {
         }
 
         public void WriteImage(string imgSource) {
-            byte[] imgData = System.IO.File.ReadAllBytes(imgSource);
+            byte[] imgData = File.ReadAllBytes(imgSource);
             var imgByteLength = imgData.Length;
             var imgTypeAsString = imgSource.Substring(imgSource.LastIndexOf('.') + 1);
             var imgTypeAsStringLength = imgTypeAsString.Length;

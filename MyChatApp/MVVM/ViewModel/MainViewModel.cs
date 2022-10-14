@@ -1,22 +1,9 @@
-﻿using ChatClient.Net;
-using ModernChat.MVVM.Model;
-using MyChatApp.Core;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System;
 using System.Collections.ObjectModel;
-using System.Drawing;
-using System.Linq;
-using System.Net;
-using System.Net.NetworkInformation;
-using System.Net.Security;
-using System.Net.Sockets;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Interop;
+using System.Linq;
+using System.Reflection;
+using System.IO;
 
 namespace MyChatApp.MVVM.ViewModel {
     internal class MainViewModel : ObservableObject {
@@ -74,6 +61,7 @@ namespace MyChatApp.MVVM.ViewModel {
 
         /* Commands */
         public RelayCommand SendMessageCommand { get; set; }
+        public RelayCommand SendPictureCommand { get; set; }
 
         public MainViewModel() {
 
@@ -92,8 +80,11 @@ namespace MyChatApp.MVVM.ViewModel {
             server.ConnectedEvent += UserConnected;
             server.UserDisconnectedEvent += RemoveUser;
             server.MessageReceivedEvent += MessageReceived;
+            server.PictureReceivedEvent += PictureReceived;
             server.ServerShutdownEvent += OnServerShutdown;
         }
+
+
 
         void UserConnected() {
 
@@ -102,14 +93,14 @@ namespace MyChatApp.MVVM.ViewModel {
             bool userAlreadyExists = Contacts.Any(x => x.Guid.ToString() == guid) || guid == Server.Guid.ToString();
 
             if (!userAlreadyExists) {
-                var profilePictureImgSource = Server.PacketReader.ReadAndSaveImage();
+                var profilePictureImgSource = Server.PacketReader.ReadAndSaveImage(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\ProfilePictures\");
                 var connectedUser = new ContactModel(username, guid, profilePictureImgSource);
                 Application.Current.Dispatcher.Invoke(() => Contacts.Add(connectedUser));
-                connectedUser.Messages.Add(new MessageModel(connectedUser.Username, "I just connected :)", connectedUser.ImageSource, DateTime.Now));
-                connectedUser.LastMessage = connectedUser.Messages.Last().Message;
+                connectedUser.Messages.Add(new SendableObject(SendableObjectType.TextMessage,connectedUser.Username, "I just connected :)", connectedUser.ImageSource, DateTime.Now));
+                connectedUser.LastMessage = connectedUser.Messages.Last().Content;
             }
             else {
-                Server.PacketReader.ReadImageAndDoNothingWithIt();
+                Server.PacketReader.ReadImage();
             }
         }
 
@@ -124,18 +115,37 @@ namespace MyChatApp.MVVM.ViewModel {
             var msg = Server.PacketReader.ReadMessage();
             var sender = Contacts.Where(x => x.Guid == GUID).FirstOrDefault();
 
-            var msgModel = new MessageModel(sender.Username, msg, sender.ImageSource, DateTime.Now);
+            var msgModel = new SendableObject(SendableObjectType.TextMessage,sender.Username, msg, sender.ImageSource, DateTime.Now);
             Application.Current.Dispatcher.Invoke(() => sender.Messages.Add(msgModel));
             Application.Current.Dispatcher.Invoke(() => sender.LastMessage = msg);
 
         }
 
+        private void PictureReceived() {
+            var GUID = Server.PacketReader.ReadMessage();
+            var img = Server.PacketReader.ReadAndSaveImage(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\ChatImages\");
+            var sender = Contacts.Where(x => x.Guid == GUID).FirstOrDefault();
+
+            var msgModel = new SendableObject(SendableObjectType.Picture, sender.Username, img, sender.ImageSource, DateTime.Now);
+            Application.Current.Dispatcher.Invoke(() => sender.Messages.Add(msgModel));
+            Application.Current.Dispatcher.Invoke(() => sender.LastMessage = "\"Image\"");
+        }
+
         void SendMessage() {
             if (selectedContact != null && !string.IsNullOrEmpty(message)) {
-                selectedContact.Messages.Add(new MessageModel(Username, message, ProfilePictureSource, DateTime.Now));
-                Server.SendMessageToServer(message, selectedContact.Guid);
+                selectedContact.Messages.Add(new SendableObject(SendableObjectType.TextMessage,Username, message, ProfilePictureSource, DateTime.Now));
+                Server.SendMessage(message, selectedContact.Guid);
                 RemoveMessageText();
             }
+        }
+
+        void SendPicture() {
+
+            if (selectedContact != null) {
+                selectedContact.Messages.Add(new SendableObject(SendableObjectType.Picture, Username, message, ProfilePictureSource, DateTime.Now));
+                Server.SendPicture(Utility.ChoosePicture(), selectedContact.Guid);
+            }
+            
         }
 
         void RemoveMessageText() {
