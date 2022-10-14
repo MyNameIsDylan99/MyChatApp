@@ -176,7 +176,7 @@
                 <Button Width="30"
                         Height="30"
                         HorizontalAlignment="Right"
-                        Margin="0,0,0,0"
+                        Margin="0,0,10,0"
                         BorderThickness="0"
                         Command="{Binding SendMessageCommand}">
                     <Button.Style>
@@ -201,7 +201,34 @@
                     </Button.Style>
                     <Image Source="/Icons/senden.png" />
                 </Button>
+                <Button Width="30"
+                        Height="30"
+                        HorizontalAlignment="Right"
+                        Margin="0,0,0,0"
+                        BorderThickness="0"
+                        Command="{Binding SendPictureCommand}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background"
+                                    Value="Transparent" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}">
+                                            <ContentPresenter HorizontalAlignment="Center"
+                                                              VerticalAlignment="Center" />
+                                        </Border>
 
+                                    </ControlTemplate>
+                                </Setter.Value>
+
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                    <Image Source="/Icons/plus.png" />
+                </Button>
             </StackPanel>
 
         </Grid>

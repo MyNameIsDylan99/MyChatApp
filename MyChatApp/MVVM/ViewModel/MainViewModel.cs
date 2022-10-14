@@ -70,6 +70,7 @@ namespace MyChatApp.MVVM.ViewModel {
 
             //Commands
             SendMessageCommand = new RelayCommand(o => SendMessage());
+            SendPictureCommand = new RelayCommand(o => SendPicture());
         }
 
         public void GetDataFromLoginViewModel(string username, string profilePictureSource, Server server) {
