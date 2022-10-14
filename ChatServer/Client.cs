@@ -95,7 +95,7 @@ namespace ChatServer {
 
             var messagePacket = new PacketBuilder();
             messagePacket.WriteOpCode(OpCode.Picture);
-            messagePacket.WriteMessage(receiver.Guid.ToString());
+            messagePacket.WriteMessage(senderGuid);
             messagePacket.AddBytesToPacket(image);
 
             receiver.TcpClient.Client.Send(messagePacket.GetPacketBytes());
