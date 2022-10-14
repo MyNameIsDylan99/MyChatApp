@@ -57,12 +57,14 @@
                                    VerticalAlignment="Center" />
                         </StackPanel>
 
-                        <Rectangle Width="100"
-                                   Height="100"
-                                   Margin="10">
+                        <Rectangle Width="200"
+                                   Height="200"
+                                   Margin="10"
+                                   Stretch="UniformToFill">
                             <Rectangle.Fill>
                                 <ImageBrush ImageSource="{Binding Content}"
-                                            RenderOptions.BitmapScalingMode="HighQuality" />
+                                            RenderOptions.BitmapScalingMode="HighQuality"
+                                            Stretch="UniformToFill" />
                             </Rectangle.Fill>
                         </Rectangle>
 
