@@ -57,10 +57,14 @@
                                    VerticalAlignment="Center" />
                         </StackPanel>
 
-                        <Image  Width="100"
-                                Height="100"
-                                Source="Content"
-                               VerticalAlignment="Center" />
+                        <Rectangle Width="100"
+                                   Height="100"
+                                   Margin="10">
+                            <Rectangle.Fill>
+                                <ImageBrush ImageSource="{Binding Content}"
+                                            RenderOptions.BitmapScalingMode="HighQuality" />
+                            </Rectangle.Fill>
+                        </Rectangle>
 
                     </StackPanel>
                 </StackPanel>
