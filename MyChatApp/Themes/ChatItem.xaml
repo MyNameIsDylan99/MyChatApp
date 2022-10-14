@@ -57,7 +57,9 @@
                                    VerticalAlignment="Center" />
                         </StackPanel>
 
-                        <Image Source="Content"
+                        <Image  Width="100"
+                                Height="100"
+                                Source="Content"
                                VerticalAlignment="Center" />
 
                     </StackPanel>
