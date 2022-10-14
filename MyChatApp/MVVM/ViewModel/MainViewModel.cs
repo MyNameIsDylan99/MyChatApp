@@ -143,8 +143,9 @@ namespace MyChatApp.MVVM.ViewModel {
         void SendPicture() {
 
             if (selectedContact != null) {
+                var imgSource = Utility.ChoosePicture();
                 selectedContact.Messages.Add(new SendableObject(SendableObjectType.Picture, Username, message, ProfilePictureSource, DateTime.Now));
-                Server.SendPicture(Utility.ChoosePicture(), selectedContact.Guid);
+                Server.SendPicture(imgSource, selectedContact.Guid);
             }
             
         }
