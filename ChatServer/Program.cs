@@ -139,7 +139,7 @@ internal static class Program {
         Client disconnectedUser = null;
         bool removedDisconnectedUser = false;
         while (!removedDisconnectedUser) {
-            removedDisconnectedUser = clients.TryRemove(guid,out disconnectedUser); //TODO: FUCK CONCURRENTBAG
+            removedDisconnectedUser = clients.TryRemove(guid,out disconnectedUser);
         }
         
         return disconnectedUser;
