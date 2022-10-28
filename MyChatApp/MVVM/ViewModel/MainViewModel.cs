@@ -4,8 +4,10 @@ using System.Windows;
 using System.Linq;
 using System.Reflection;
 using System.IO;
+using ChatClient.Core;
 
-namespace MyChatApp.MVVM.ViewModel {
+namespace MyChatApp.MVVM.ViewModel
+{
     internal class MainViewModel : ObservableObject {
 
         string username;

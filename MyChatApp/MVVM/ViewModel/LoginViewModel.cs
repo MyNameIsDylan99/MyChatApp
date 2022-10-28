@@ -7,6 +7,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Windows;
+using ChatClient.Core;
 
 public enum ConnectionMethods {
     Localhost,
@@ -14,7 +15,8 @@ public enum ConnectionMethods {
     Manual
 
 }
-namespace MyChatApp {
+namespace MyChatApp
+{
 
     internal class LoginViewModel : ObservableObject {
 

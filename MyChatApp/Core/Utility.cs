@@ -1,9 +1,12 @@
 ﻿using System;
 
-namespace MyChatApp {
-    internal static class Utility {
+namespace ChatClient.Core
+{
+    internal static class Utility
+    {
 
-        public static string ChoosePicture() {
+        public static string ChoosePicture()
+        {
 
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
 
@@ -12,7 +15,8 @@ namespace MyChatApp {
 
             bool? result = dlg.ShowDialog();
             var choosenPicturePath = "";
-            if (result == true) {
+            if (result == true)
+            {
 
                 choosenPicturePath = dlg.FileName;
             }
