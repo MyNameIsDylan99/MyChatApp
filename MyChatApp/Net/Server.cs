@@ -41,14 +41,15 @@ internal class Server {
             tcpClient = new TcpClient();
             tcpClient.ReceiveBufferSize = receiveAndSendBufferSize;
             tcpClient.SendBufferSize = receiveAndSendBufferSize;
-            udpClient.EnableBroadcast = true;
 
+            if (!udpClient.Client.IsBound) {
+                udpClient.EnableBroadcast = true;
+                udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, port));
+            }
         }
 
         public void SearchForServersInWlanSubnet() {
-
-            if(!udpClient.Client.IsBound)
-            udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, port));
 
             var from = new IPEndPoint(0, 0);
             Task.Run(() => {
@@ -74,9 +75,11 @@ internal class Server {
                         ip = "127.0.0.1";
 
                         break;
-                    case ConnectionMethods.SearchInLan:
+                    case ConnectionMethods.SearchWlanSubnet:
+                    case ConnectionMethods.Manual:
                         ip = selectedServerIp;
                         break;
+
                 }
                 tcpClient.Connect(ip, port);
                 PacketReader = new PacketReader(tcpClient.GetStream());
@@ -89,7 +92,6 @@ internal class Server {
                     connectPacket.WriteImage(profilePictureSource);
                     NetworkStream ns = tcpClient.GetStream();
                     ns.Write(connectPacket.GetPacketBytes());
-                    //tcpClient.Client.Send(connectPacket.GetPacketBytes());
                 }
 
                 ReadPackets();

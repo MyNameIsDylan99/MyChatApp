@@ -10,7 +10,9 @@ using System.Windows;
 
 public enum ConnectionMethods {
     Localhost,
-    SearchInLan
+    SearchWlanSubnet,
+    Manual
+
 }
 namespace MyChatApp {
 
@@ -19,7 +21,7 @@ namespace MyChatApp {
         public string Username { get; set; }
 
 
-        string profilePictureSource = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\ProfilePictures/DefaultProfilePicture.png";
+        string profilePictureSource = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\ProfilePictures\DefaultProfilePicture.png";
         public string ProfilePictureSource {
             get { return profilePictureSource; }
             set {
@@ -104,9 +106,13 @@ namespace MyChatApp {
         private void ChangeProfilePicture(object sender) {
 
             string sourceFile = Utility.ChoosePicture();
+
+            if (string.IsNullOrEmpty(sourceFile))
+            sourceFile = ProfilePictureSource;
+
             string onlyFileName = sourceFile.Substring(sourceFile.LastIndexOf(@"\") + 1);
 
-            string destinationFile = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/ProfilePictures/" + onlyFileName;
+            string destinationFile = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\ProfilePictures\" + onlyFileName;
             try {
                 File.Copy(sourceFile, destinationFile, true);
             }

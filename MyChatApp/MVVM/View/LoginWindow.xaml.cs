@@ -20,12 +20,17 @@ namespace MyChatApp.MVVM.View {
 
 
         private void OnConnectionMethodChoosen(object? sender, EventArgs e) {
+            this.IPList.Visibility = Visibility.Hidden;
+            this.ManualIPText.Visibility = Visibility.Hidden;
             switch (loginViewModel.ConnectionMethod) {
                 case ConnectionMethods.Localhost:
-                    this.IPList.Visibility = Visibility.Hidden;
+                    
                     break;
-                case ConnectionMethods.SearchInLan:
+                case ConnectionMethods.SearchWlanSubnet:
                     this.IPList.Visibility = Visibility.Visible;
+                    break;
+                case ConnectionMethods.Manual:
+                    this.ManualIPText.Visibility = Visibility.Visible;
                     break;
             }
             

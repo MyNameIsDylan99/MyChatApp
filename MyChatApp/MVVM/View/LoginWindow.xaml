@@ -712,6 +712,13 @@
                       ItemsSource="{Binding ServerIPsInLan}"
                       SelectedItem="{Binding SelectedServerIP}">
             </ListView>
+            <TextBox 
+                x:Name="ManualIPText"
+                Visibility="Hidden"
+                Grid.Row="2"
+                Grid.Column="2"
+                Text="{Binding SelectedServerIP}"
+                Height="25"/>
             <Button Grid.Column="0"
                     Grid.Row="3"
                     Grid.ColumnSpan="3"

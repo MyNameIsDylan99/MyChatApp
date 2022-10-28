@@ -42,7 +42,6 @@ internal static class Program {
 
         StartTimedMethod(2000, BroadcastUdpPackets);
         AcceptTcpClients();
-        
 
     }
 
