@@ -49,6 +49,7 @@ namespace MyChatApp.MVVM.View {
 
             else {
                 this.UsernameEmpyErrorMessage.Visibility = Visibility.Visible;
+                return;
             }
 
             try {
